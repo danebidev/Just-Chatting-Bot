@@ -9,6 +9,10 @@
   },
   "author": "danebidev",
   "license": "ISC",
+  "nodemonConfig": {
+    "ignore": ["config.json"],
+    "delay": 2500
+  },
   "dependencies": {
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0"
