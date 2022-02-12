@@ -8,7 +8,7 @@ module.exports = {
 	execute: function(args, event, client) {
 
 		client.config.prefix = args[0];
-		fs.writeFile('./config.json', JSON.stringify(client.config), err => {
+		fs.writeFile('./config.json', JSON.stringify(client.config, null, 2), err => {
 			if(err) return console.error(err);
 		});
 
