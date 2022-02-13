@@ -9,8 +9,13 @@ dotenv.config();
 const token = process.env.TOKEN;
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES], partials: ['CHANNEL'] });
 client.config = config;
+// client.exists = fs.existsSync('./bumps.json');
 registerEvents();
 readCommands();
+
+// Random stuff
+// if(!client.exists) fs.writeFile('./bumps.json', JSON.stringify({}, null, 2));
+
 
 client.login(token);
 

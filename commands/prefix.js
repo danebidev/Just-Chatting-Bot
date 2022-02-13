@@ -5,14 +5,14 @@ module.exports = {
 	name: 'prefix',
 	minArgs: 1,
 	maxArgs: 1,
-	syntax: 'prefix <new prefix>',
+	syntax: 'prefix <nuovo prefisso>',
 	args: [
 		{
-			name: 'new prefix',
-			explaination: 'The new prefix for the bot commands'
+			name: 'nuovo prefisso',
+			explaination: 'Il nuovo prefisso per i comandi del bot'
 		}
 	],
-	helpMessage: 'Change the bot commands prefix',
+	helpMessage: 'Cambia il prefisso per i comandi del bot',
 
 	execute: function(args, message, client) {
 
@@ -20,11 +20,8 @@ module.exports = {
 		fs.writeFile('./config.json', JSON.stringify(client.config, null, 2), err => {
 			if(err) return console.error(err);
 		});
+		message.reply(`Il prefisso è stato cambiato a \`${client.config.prefix}\``);
 
-	},
-
-	getArgs: function(prefix) {
-		return prefix + this.args;
 	}
 
 };
