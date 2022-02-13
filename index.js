@@ -4,6 +4,7 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const Discord = require('discord.js');
 
+
 // Other constants
 dotenv.config();
 const token = process.env.TOKEN;
@@ -12,17 +13,11 @@ client.config = config;
 registerEvents();
 readCommands();
 
-// Random stuff
-if(!fs.existsSync('./bumps.json')) {
-	fs.writeFile('./bumps.json', JSON.stringify({}, null, 2), err => {
-		if(err) return console.error(err);
-	});
-}
 
+// Random shit
 client.bumps = require('./bumps.json');
-
-
 client.login(token);
+
 
 // Functions
 function registerEvents() {
