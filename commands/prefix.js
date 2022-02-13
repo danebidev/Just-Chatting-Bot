@@ -8,7 +8,7 @@ module.exports = {
 	syntax: 'prefix <nuovo prefisso>',
 	args: [
 		{
-			name: 'nuovo prefisso',
+			name: '<nuovo prefisso>',
 			explaination: 'Il nuovo prefisso per i comandi del bot'
 		}
 	],

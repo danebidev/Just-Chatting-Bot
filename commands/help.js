@@ -6,7 +6,7 @@ module.exports = {
 	syntax: 'help [comando]',
 	args: [
 		{
-			name: 'comando',
+			name: '[comando]',
 			explaination: 'Il comando di cui vuoi sapere più informazioni'
 		}
 	],
@@ -14,59 +14,59 @@ module.exports = {
 
 	execute: function(args, message, client) {
 
-		message.author.createDM().then(channel => {
-			if(args.length == 0) {
+		const user = message.author;
 
-				const embed = {
-
-					color: 0x104eb2,
-					title: 'Aiuto',
-					author: { name: message.author.username, iconURL: message.author.avatarURL },
-					description: 'Messaggio di aiuto con tutti i comandi e le loro spiegazioni',
-					fields: []
-					// timestamp: new Date(),
-
-				};
-
-				for(const command of client.commands.values()) {
-
-					embed.fields.push({
-						name: `\`${command.name}\``,
-						value: command.helpMessage,
-						inline: true
-					});
-
-				}
-
-				return channel.send({ embeds:[embed] });
-			}
-
-			const commandName = args[0];
-			if(!client.commands.has(commandName)) return channel.send(`Non sono riuscito a trovare il comando \`${commandName}\``);
-			const command = client.commands.get(commandName);
+		if (args.length == 0) {
 
 			const embed = {
 
 				color: 0x104eb2,
-				title: commandName,
+				title: 'Aiuto',
 				author: { name: message.author.username, iconURL: message.author.avatarURL },
-				description: command.helpMessage,
-				fields: [{ name: 'Synax', value: `\`${command.syntax}\``, inline: false }]
+				description: 'Messaggio di aiuto con tutti i comandi e le loro spiegazioni',
+				fields: []
 				// timestamp: new Date(),
 
 			};
 
-			for(const arg of command.args) {
+			for (const command of client.commands.values()) {
+
 				embed.fields.push({
-					name: arg.name,
-					value: arg.explaination,
+					name: `\`${command.name}\``,
+					value: command.helpMessage,
 					inline: true
 				});
+
 			}
 
-			channel.send({ embeds: [embed] });
+			return user.send({ embeds: [embed] });
+		}
 
-		});
+		const commandName = args[0];
+		if (!client.commands.has(commandName)) return user.send(`Non sono riuscito a trovare il comando \`${commandName}\``);
+		const command = client.commands.get(commandName);
+
+		const embed = {
+
+			color: 0x104eb2,
+			title: commandName,
+			author: { name: message.author.username, iconURL: message.author.avatarURL },
+			description: command.helpMessage,
+			fields: [{ name: 'Synax', value: `\`${command.syntax}\``, inline: false }]
+			// timestamp: new Date(),
+
+		};
+
+		for (const arg of command.args) {
+			embed.fields.push({
+				name: arg.name,
+				value: arg.explaination,
+				inline: true
+			});
+		}
+
+		user.send({ embeds: [embed] });
+
 
 	}
 

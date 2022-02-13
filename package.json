@@ -10,8 +10,7 @@
   "author": "danebidev",
   "license": "ISC",
   "nodemonConfig": {
-    "ignore": ["config.json"],
-    "delay": 2500
+    "ignore": ["config.json", "bumps.json"]
   },
   "dependencies": {
     "discord.js": "^13.6.0",
