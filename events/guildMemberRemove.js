@@ -13,7 +13,7 @@ module.exports = {
 
 		if(client.bumps[member.id] <= 0) return;
 
-		const channel = client.channels.cache.get('836579149107691580');
+		const channel = client.channels.cache.get('927603928252702820');
 
 		deleteBumps(member.user, channel, client);
 

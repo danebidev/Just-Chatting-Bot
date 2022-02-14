@@ -6,8 +6,7 @@ module.exports = {
 
 	execute: function(message, client) {
 
-		// eslint-disable-next-line no-inline-comments
-		if(message.author.id == /* '302050872383242240'*/'942383043526656040') return bumpCount.execute(message, client);
+		if(message.author.id == '302050872383242240') return bumpCount.execute(message, client);
 
 		message.content = message.content.trim();
 

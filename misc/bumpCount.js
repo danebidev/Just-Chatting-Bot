@@ -16,14 +16,14 @@ module.exports = {
 			client.bumps[user.id] = 0;
 		}
 
+		const channel = client.channels.cache.get('927603928252702820');
+
+		if (client.bumps[user.id] == 0) channel.send(`<@${user.id}>: ${quant}`);
+
 		client.bumps[user.id] = client.bumps[user.id] + quant;
 		fs.writeFile('./bumps.json', JSON.stringify(client.bumps, null, 2), err => {
 			if(err) return console.error(err);
 		});
-
-		const channel = client.channels.cache.get('836579149107691580');
-
-		if (client.bumps[user.id] == 1) return channel.send(`<@${user.id}>: ${quant}`);
 
 		channel.messages.fetch({ limit: 100 }).then(messages => {
 			messages.forEach(message => {
@@ -38,7 +38,7 @@ module.exports = {
 	decreaseBumps: function(user, quant, client) {
 
 		client.bumps[user.id] = client.bumps[user.id] - quant;
-		const channel = client.channels.cache.get('836579149107691580');
+		const channel = client.channels.cache.get('927603928252702820');
 
 		if(client.bumps[user.id] <= 0) return this.deleteBumps(user, channel, client);
 
