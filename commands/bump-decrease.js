@@ -2,32 +2,33 @@ const bumpCount = require('../misc/bumpCount');
 
 module.exports = {
 
-	name: 'bump-increase',
+	name: 'bump-decrease',
 	minArgs: 1,
 	maxArgs: 2,
-	syntax: 'bump-increase <menzione all\'utente> [quantità]',
+	syntax: 'bump-decrease <menzione dell\'utente> [quantità]',
 	args: [
 		{
-			name: '<menzione dell\' utente>',
-			explaination: 'Una menzione(@nome dell\' utente) dell\' utente di cui vuoi Aumenta i bump'
+			name: '<menzione all\' utente>',
+			explaination: 'Una menzione(@nome dell\' utente) dell\' utente di cui vuoi diminuire i bump'
 		},
 		{
 			name: '[quantità]',
-			explaination: 'Di quanto aumentare i bump dell\'utente'
+			explaination: 'Di quanto diminuire i bump dell\'utente'
 		}
 	],
-	helpMessage: 'Aumenta i bump fatti da un utente',
+	helpMessage: 'Diminuisci i bump fatti da un utente',
 
 	execute: function(args, message, client) {
 
 		client.users.fetch(args[0].replaceAll(/@|<|>|!/g, '')).then(user => {
 
-			if(!args[1]) return bumpCount.incrementBump(user, 1, client);
-
+			if(!args[1]) {
+				return bumpCount.decreaseBump(user, 1, client);
+			}
 			const quant = Number(args[1]);
 			if(!quant || quant <= 0) return message.reply('Il numero inserito non è valido.');
-			bumpCount.incrementBump(user, Number(args[1]), client);
-			message.reply('Bump aumentati con successo');
+			bumpCount.deacreaseBump(user, Number(args[1]), client);
+			message.reply('Bump diminuiti con successo');
 
 		}).catch(err => {
 			message.reply('Non sono riuscito a trovare l\'utente che stai cercando (Probabilmente).');
