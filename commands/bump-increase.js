@@ -22,11 +22,11 @@ module.exports = {
 
 		client.users.fetch(args[0].replaceAll(/@|<|>|!/g, '')).then(user => {
 
-			if(!args[1]) return bumpCount.incrementBump(user, 1, client);
+			if(!args[1]) return bumpCount.incrementBumps(user, 1, client);
 
 			const quant = Number(args[1]);
 			if(!quant || quant <= 0) return message.reply('Il numero inserito non è valido.');
-			bumpCount.incrementBump(user, Number(args[1]), client);
+			bumpCount.incrementBumps(user, Number(args[1]), client);
 			message.reply('Bump aumentati con successo');
 
 		}).catch(err => {

@@ -12,9 +12,13 @@ module.exports = {
 
 	incrementBumps: function(user, quant, client) {
 
+		if (client.bumps[user.id] == undefined) {
+			client.bumps[user.id] = 0;
+		}
+
 		client.bumps[user.id] = client.bumps[user.id] + quant;
 		fs.writeFile('./bumps.json', JSON.stringify(client.bumps, null, 2), err => {
-			if (err) return console.error(err);
+			if(err) return console.error(err);
 		});
 
 		const channel = client.channels.cache.get('836579149107691580');
