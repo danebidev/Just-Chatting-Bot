@@ -12,8 +12,8 @@ module.exports = {
 
 		if(message.content.substring(0, client.config.prefix.length) != client.config.prefix || message.author.bot) return;
 
-		const guild = await client.guilds.cache.get('748232983768465408');
-		const role = await guild.roles.cache.get('938485643384860702');
+		const guild = await client.guilds.cache.get('917119141511589959');
+		const role = await guild.roles.cache.get('942820621744742432');
 		const member = await guild.members.cache.get(message.author.id);
 
 		if(await !member.roles.cache.has(role.id)) return;
