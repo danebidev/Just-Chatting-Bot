@@ -10,7 +10,7 @@ module.exports = {
 		client.users.fetch(embed.description.split(' ')[0].replaceAll(/@|<|>/g, '')).then(user => this.incrementBumps(user, 1, client));
 	},
 
-	incrementBumps: function(user, quant, client) {
+	incrementBumps: async function(user, quant, client) {
 
 		if (client.bumps[user.id] == undefined) {
 			client.bumps[user.id] = 0;
@@ -32,6 +32,18 @@ module.exports = {
 				}
 			});
 		});
+
+		const guild = await client.guilds.cache.get('917119141511589959');
+		const bumpatore = await guild.roles.cache.get('923967135682813992');
+		const bumpatorePlus = await guild.roles.cache.get('928385637386690620');
+		const member = await guild.members.cache.get(user.id);
+
+		if(client.bumps[user.id] >= 50 && client.bumps[user.id] < 100 && !member.roles.cache.has(bumpatore.id)) member.roles.add(bumpatore);
+
+		if(client.bumps[user.id] >= 100) {
+			if(member.roles.cache.has(bumpatore.id)) member.roles.remove(bumpatore);
+			member.roles.add(bumpatorePlus);
+		}
 
 	},
 
