@@ -1,10 +1,5 @@
 // Imports
 const config = require('./config.json');
-<<<<<<< Updated upstream
-const fs = require('fs');
-const dotenv = require('dotenv');
-=======
->>>>>>> Stashed changes
 const Discord = require('discord.js');
 const pg = require('pg');
 const fs = require('fs');
@@ -13,12 +8,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 
-<<<<<<< Updated upstream
-// Other constants
-dotenv.config();
-=======
 // Variables / Properties
->>>>>>> Stashed changes
 const token = process.env.TOKEN;
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES], partials: ['CHANNEL'] });
 client.config = config;
