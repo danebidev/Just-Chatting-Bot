@@ -1,12 +1,10 @@
 // Imports
 const config = require('./config.json');
 const fs = require('fs');
-const dotenv = require('dotenv');
 const Discord = require('discord.js');
 
 
 // Other constants
-dotenv.config();
 const token = process.env.TOKEN;
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES], partials: ['CHANNEL'] });
 client.config = config;
