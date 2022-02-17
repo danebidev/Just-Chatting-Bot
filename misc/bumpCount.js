@@ -9,6 +9,8 @@ module.exports = {
 
 			await dbClient.query(`DELETE FROM bumps WHERE id='${user.id}';`);
 			client.bumps.delete(user.id);
+			dbClient.release();
+			this.updateMessage(user, newValue, client);
 
 		} else {
 
@@ -20,6 +22,7 @@ module.exports = {
 
 		dbClient.release();
 		this.updateMessage(user, newValue, client);
+		this.updateRoles(user, newValue, client);
 
 	},
 
@@ -29,8 +32,22 @@ module.exports = {
 		const channel = await guild.channels.fetch('927603928252702820');
 		const message = (await channel.messages.fetch()).filter((m) => m.content.startsWith(`<@${user.id}>`)).first();
 
-		if(!message) return channel.send(`<@${user.id}>: ${newValue}`);
+		if(newValue <= 0 && message) return message.delete();
+
+		if(!message && newValue >= 1) return channel.send(`<@${user.id}>: ${newValue}`);
 		message.edit(`<@${user.id}>: ${newValue}`);
+
+	},
+
+	updateRoles: async function(user, newValue, client) {
+
+		const guild = await client.guilds.fetch('917119141511589959');
+		const bumpatore = await guild.roles.fetch('923967135682813992');
+		const bumpatorep = await guild.roles.fetch('928385637386690620');
+		const member = guild.members.fetch(user.id);
+
+		if(client.bumps.get(user.id) >= 50 && client.bumps.get(bumpatore.id) < 100 && !member.roles.cache.has(user.id)) member.roles.add(bumpatore);
+		if(client.bumps.get(user.id) >= 100 && !member.roles.cache.has(bumpatorep.id)) member.roles.add(bumpatorep);
 
 	},
 

@@ -1,5 +1,4 @@
 // Imports
-const config = require('./config.json');
 const Discord = require('discord.js');
 const pg = require('pg');
 const fs = require('fs');
@@ -11,7 +10,6 @@ dotenv.config();
 // Variables / Properties
 const token = process.env.TOKEN;
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES], partials: ['CHANNEL'] });
-client.config = config;
 client.bumps = new Discord.Collection();
 client.database = new pg.Pool({
 	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1515@localhost:5432/postgres',
@@ -23,10 +21,17 @@ client.database = new pg.Pool({
 client.database.connect().then(dbClient => {
 	dbClient.query('SELECT * FROM bumps;').then(res => {
 
+		for(const row of res.rows) {
+			client.bumps.set(row.id, row.bumps);
+		}
+
+	}).catch(err => console.error(err));
+	dbClient.query('SELECT * FROM config;').then(res => {
+
 		dbClient.release();
 
 		for(const row of res.rows) {
-			client.bumps.set(row.id, row.bumps);
+			client.config[row.name] = row.value;
 		}
 
 	}).catch(err => console.error(err));
