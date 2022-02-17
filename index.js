@@ -11,6 +11,7 @@ dotenv.config();
 const token = process.env.TOKEN;
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES], partials: ['CHANNEL'] });
 client.bumps = new Discord.Collection();
+client.config = {};
 client.database = new pg.Pool({
 	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1515@localhost:5432/postgres',
 	ssl: process.env.DATABASE_URL ? {
