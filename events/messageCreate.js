@@ -6,7 +6,7 @@ module.exports = {
 
 	execute: async function(message, client) {
 
-		if(message.author.id == '302050872383242240') return bumpCount.execute(message, client);
+		if(message.author.id == '302050872383242240') return bumpCount.autoBumpCount(message, client);
 
 		message.content = message.content.trim();
 

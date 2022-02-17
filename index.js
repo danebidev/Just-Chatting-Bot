@@ -12,13 +12,25 @@ dotenv.config();
 const token = process.env.TOKEN;
 const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES], partials: ['CHANNEL'] });
 client.config = config;
-client.bumps = require('./bumps.json');
+client.bumps = new Discord.Collection();
 client.database = new pg.Pool({
-	connectionString: process.env.DATABASE_URL || 'postgresql://postgres@localhost:5432/postgres',
+	connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1515@localhost:5432/postgres',
 	ssl: process.env.DATABASE_URL ? {
 		rejectUnauthorized: false
 	} : false
 });
+
+client.database.connect().then(dbClient => {
+	dbClient.query('SELECT * FROM bumps;').then(res => {
+
+		dbClient.release();
+
+		for(const row of res.rows) {
+			client.bumps.set(row.id, row.bumps);
+		}
+
+	}).catch(err => console.error(err));
+}).catch(err => console.error(err));
 
 
 // Random shit
@@ -26,7 +38,6 @@ registerEvents();
 readCommands();
 
 client.login(token);
-client.database.connect();
 
 
 // Functions
