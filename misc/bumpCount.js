@@ -46,8 +46,8 @@ module.exports = {
 		const bumpatorep = await guild.roles.fetch('928385637386690620');
 		const member = guild.members.fetch(user.id);
 
-		if(client.bumps.get(user.id) >= 50 && client.bumps.get(bumpatore.id) < 100 && !member.roles.cache.has(user.id)) member.roles.add(bumpatore);
-		if(client.bumps.get(user.id) >= 100 && !member.roles.cache.has(bumpatorep.id)) member.roles.add(bumpatorep);
+		if(client.bumps.get(user.id) >= 50 && client.bumps.get(bumpatore.id) < 100 && await !member.roles.cache.has(user.id)) await member.roles.add(bumpatore);
+		if(client.bumps.get(user.id) >= 100 && await !member.roles.cache.has(bumpatorep.id)) await member.roles.add(bumpatorep);
 
 	},
 
