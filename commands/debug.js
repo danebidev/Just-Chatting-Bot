@@ -11,7 +11,7 @@ module.exports = {
 
 		const embed = {
 			title: 'Test',
-			description: '<@441231462759661569> Bump done!'
+			description: `<@${message.author.id}> Bump done!`
 		};
 
 		message.reply({ embeds: [embed] });

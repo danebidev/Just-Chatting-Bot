@@ -42,12 +42,12 @@ module.exports = {
 	updateRoles: async function(user, newValue, client) {
 
 		const guild = await client.guilds.fetch('917119141511589959');
-		const bumpatore = await guild.roles.fetch('923967135682813992');
-		const bumpatorep = await guild.roles.fetch('928385637386690620');
-		const member = guild.members.fetch(user.id);
+		const bumpatoreRole = await guild.roles.fetch('923967135682813992');
+		const bumpatorepRole = await guild.roles.fetch('928385637386690620');
+		const member = await guild.members.fetch(user.id);
 
-		if(client.bumps.get(user.id) >= 50 && client.bumps.get(bumpatore.id) < 100 && await !member.roles.cache.has(user.id)) await member.roles.add(bumpatore);
-		if(client.bumps.get(user.id) >= 100 && await !member.roles.cache.has(bumpatorep.id)) await member.roles.add(bumpatorep);
+		if(await client.bumps.get(user.id) >= 50 && client.bumps.get(user.id) < 100 && !member.roles.cache.has(bumpatoreRole.id)) await member.roles.add(bumpatoreRole);
+		if(await client.bumps.get(user.id) >= 100 && !member.roles.cache.has(bumpatorepRole.id)) await member.roles.add(bumpatorepRole);
 
 	},
 
