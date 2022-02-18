@@ -1,21 +1,16 @@
-const { deleteBumps } = require('../misc/bumpCount');
-
 module.exports = {
 
 	name: 'guildMemberRemove',
 
-	/**
-	 *
-	 * @param {GuildMember} member
-	 * @param {Client} client
-	 */
-	execute: function(member, client) {
+	execute: async function(member, client) {
 
 		if(client.bumps[member.id] <= 0) return;
 
-		const channel = client.channels.cache.get('927603928252702820');
+		const guild = await client.guilds.fetch('917119141511589959');
+		const channel = await guild.channels.fetch('927603928252702820');
+		const message = (await channel.messages.fetch()).filter((m) => m.content.startsWith(`<@${member.id}>`)).first();
 
-		deleteBumps(member.user, channel, client);
+		await message.delete();
 
 	}
 
