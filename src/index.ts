@@ -50,7 +50,7 @@ client.login(token);
 function registerEvents() {
 
 	const events = [];
-	const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+	const eventFiles = fs.readdirSync('./build/events').filter(file => file.endsWith('.js'));
 
 	for(const file of eventFiles) {
 		const event = require(`./events/${file}`);
@@ -66,7 +66,7 @@ function registerEvents() {
 function readCommands() {
 
 	client.commands = new Discord.Collection;
-	const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+	const commandFiles = fs.readdirSync('./build/commands').filter(file => file.endsWith('.js'));
 
 	for(const file of commandFiles) {
 		const command = require(`./commands/${file}`);

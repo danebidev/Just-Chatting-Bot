@@ -4,9 +4,10 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "compile": "tsc",
     "start": "npm run compile & node .",
-    "dev": "npm run compile & nodemon ."
+    "dev": "npm run compile & nodemon .",
+    "compile": "tsc",
+    "lint": "eslint . --ext .ts"
   },
   "author": "danebidev",
   "license": "ISC",
