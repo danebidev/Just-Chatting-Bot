@@ -10,8 +10,7 @@
     "start": "npm run compile & node .",
     "dev": "npm run compile & nodemon .",
     "compile": "tsc",
-    "lint": "eslint . --ext .ts",
-    "postinstall": "tsc"
+    "lint": "eslint . --ext .ts"
   },
   "author": "danebidev",
   "license": "ISC",
