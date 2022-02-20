@@ -13,8 +13,6 @@ export = {
 
 			await dbClient.query(`DELETE FROM bumps WHERE id='${user.id}';`);
 			data.bumps.delete(user.id);
-			dbClient.release();
-			this.updateMessage(user, newValue, data);
 
 		} else {
 
@@ -25,9 +23,9 @@ export = {
 		}
 
 		dbClient.release();
+		
 		this.updateMessage(user, newValue, data);
 		this.updateRoles(user, newValue, data);
-		
 		logging.logBump({user: user, oldValue: newValue - quant, newValue: newValue, changeAuthor: author}, data);
 
 	},
