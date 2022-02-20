@@ -17,26 +17,15 @@ export = {
 
 	execute: function(message: Discord.Message, args: string[], data: Data): Promise<any> {
 
-		interface Embed {
-			
-			color: number,
-			title: string,
-			author: { name: string, iconURL?: string},
-			description: string,
-			fields: Discord.EmbedField[],
-			timestamp: Date
-			
-		}
-		
 		const user = message.author;
 
 		if (args.length == 0) {
 			
-			const embed: Embed = {
+			const embed: Discord.MessageEmbedOptions = {
 				
 				color: 0x104eb2,
 				title: 'Aiuto',
-				author: { name: message.author.username, iconURL: message.author.avatarURL()! },
+				author: { name: message.author.username, iconURL: message.author.defaultAvatarURL },
 				description: 'Messaggio di aiuto con tutti i comandi e le loro spiegazioni',
 				fields: [],
 				timestamp: new Date()
@@ -51,7 +40,7 @@ export = {
 					inline: true
 				}	
 				
-				embed.fields.push(field);
+				embed.fields!.push(field);
 
 			}
 
@@ -62,11 +51,11 @@ export = {
 		if (!data.commands.has(commandName)) return user.send(`Non sono riuscito a trovare il comando \`${commandName}\``);
 		const command = data.commands.get(commandName)!;
 
-		const embed: Embed = {
+		const embed: Discord.MessageEmbedOptions = {
 
 			color: 0x104eb2,
 			title: commandName,
-			author: { name: message.author.username, iconURL: message.author.avatarURL()! },
+			author: { name: message.author.username, iconURL: message.author.defaultAvatarURL },
 			description: command.helpMessage,
 			fields: [{ name: 'Synax', value: `\`${command.syntax}\``, inline: false }],
 			timestamp: new Date()
@@ -74,7 +63,7 @@ export = {
 		};
 
 		for (const arg of command.args) {
-			embed.fields.push({
+			embed.fields!.push({
 				name: arg.name,
 				value: arg.explaination,
 				inline: true

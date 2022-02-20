@@ -1,9 +1,10 @@
 import Discord = require('discord.js');
+import logging = require('./logging');
 import { Data } from '../index';
 
 export = {
 
-	changeBumps: async function(user: Discord.User, quant: number, data: Data) {
+	changeBumps: async function(user: Discord.User, quant: number, author: Discord.User | null, data: Data) {
 
 		const newValue = (data.bumps.get(user.id) || 0) + quant;
 		const dbClient = await data.database.connect();
@@ -26,6 +27,8 @@ export = {
 		dbClient.release();
 		this.updateMessage(user, newValue, data);
 		this.updateRoles(user, newValue, data);
+		
+		logging.logBump({user: user, change: quant, changeAuthor: author}, data);
 
 	},
 
@@ -67,7 +70,7 @@ export = {
 		const embed = botMessage.embeds[0];
 		if (!embed || !embed.description!.includes('Bump done!')) return;
 
-		data.client.users.fetch(embed.description!.split(' ')[0]!.replaceAll(/@|<|>/g, '')).then(user => this.changeBumps(user, 1, data));
+		data.client.users.fetch(embed.description!.split(' ')[0]!.replaceAll(/@|<|>/g, '')).then(user => this.changeBumps(user, 1, null, data));
 	}
 
 };

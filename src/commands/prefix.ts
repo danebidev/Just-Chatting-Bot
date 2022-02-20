@@ -17,8 +17,6 @@ export = {
 
 	execute: async function(message: Discord.Message, args: string[], data: Data) {
 
-		console.log(args[0]);
-		
 		data.config.set('prefix', args[0]!);
 		data.database.connect().then(client => {
 			client.query(`UPDATE config SET value='${args[0]!}' WHERE name='prefix';`);

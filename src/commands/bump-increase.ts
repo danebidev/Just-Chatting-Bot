@@ -24,12 +24,12 @@ export = {
 
 		const user = await data.client.users.fetch(args[0]!.replaceAll(/@|<|>|!/g, ''))
 
-		if (!args[1]) return await bumpCount.changeBumps(user, 1, data);
+		if (!args[1]) return await bumpCount.changeBumps(user, 1, message.author, data);
 
 		const quant = Number(args[1]);
 		if (!quant || quant <= 0) return message.reply('Il numero inserito non è valido.');
 		
-		await bumpCount.changeBumps(user, Number(args[1]), data);
+		await bumpCount.changeBumps(user, Number(args[1]), message.author, data);
 		return message.reply('Bump aumentati con successo');
 
 	},
