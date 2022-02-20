@@ -31,8 +31,8 @@ export = {
 
 	updateMessage: async function(user: Discord.User, newValue: number, data: Data): Promise<any> {
 
-		const guild = await data.client.guilds.fetch(/*'917119141511589959'*/'748232983768465408');
-		const channel = await guild.channels.fetch(/*'927603928252702820'*/'836579149107691580') as Discord.TextChannel;
+		const guild = await data.client.guilds.fetch('917119141511589959');
+		const channel = await guild.channels.fetch('927603928252702820') as Discord.TextChannel;
 		const message = (await channel.messages.fetch()).filter((m: Discord.Message) => m.content.startsWith(`<@${user.id}>`)).first()!;
 
 		if(newValue <= 0 && message) return message.delete();
@@ -44,9 +44,9 @@ export = {
 
 	updateRoles: async function(user: Discord.User, newValue: number, data: Data) {
 
-		const guild = await data.client.guilds.fetch(/*'917119141511589959'*/'748232983768465408');
-		const bumpatoreRole = (await guild.roles.fetch(/*'923967135682813992'*/'944941019252805652'))!;
-		const bumpatorepRole = (await guild.roles.fetch(/*'928385637386690620'*/'944941123791630337'))!;
+		const guild = await data.client.guilds.fetch('917119141511589959');
+		const bumpatoreRole = (await guild.roles.fetch('923967135682813992'))!;
+		const bumpatorepRole = (await guild.roles.fetch('928385637386690620'))!;
 		const member = await guild.members.fetch(user.id);
 		
 		if(newValue < 50 && (member.roles.cache.has(bumpatoreRole.id) || member.roles.cache.has(bumpatorepRole.id))) {

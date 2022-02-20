@@ -8,15 +8,15 @@ export =  {
 
 	execute: async function(message: Discord.Message, data: Data) {
 
-		if(message.author.id == /*'302050872383242240'*/'942383043526656040') return bumpCount.autoBumpCount(message, data);
+		if(message.author.id == '302050872383242240') return bumpCount.autoBumpCount(message, data);
 
 		const prefix = data.config.get('prefix')!;
 		
 		message.content = message.content.trim();
 		if(message.content.substring(0, prefix.length) != prefix || message.author.bot) return;
 
-		const guild = data.client.guilds.cache.get(/*'917119141511589959'*/'748232983768465408')!;
-		const role = guild.roles.cache.get(/*'942820621744742432'*/'938485643384860702')!;
+		const guild = data.client.guilds.cache.get('917119141511589959')!;
+		const role = guild.roles.cache.get('942820621744742432')!;
 		const member = guild.members.cache.get(message.author.id)!;
 
 		if(!member.roles.cache.has(role.id)) return;
