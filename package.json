@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "build/index.js",
+  "engines": { "node": "17.4.0" },
   "scripts": {
     "start": "npm run compile & node .",
     "dev": "npm run compile & nodemon .",
     "compile": "tsc",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "postinstall": "tsc"
   },
   "author": "danebidev",
   "license": "ISC",
