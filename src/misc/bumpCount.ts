@@ -28,7 +28,7 @@ export = {
 		this.updateMessage(user, newValue, data);
 		this.updateRoles(user, newValue, data);
 		
-		logging.logBump({user: user, change: quant, changeAuthor: author}, data);
+		logging.logBump({user: user, oldValue: newValue - quant, newValue: newValue, changeAuthor: author}, data);
 
 	},
 
@@ -71,6 +71,7 @@ export = {
 		if (!embed || !embed.description!.includes('Bump done!')) return;
 
 		data.client.users.fetch(embed.description!.split(' ')[0]!.replaceAll(/@|<|>/g, '')).then(user => this.changeBumps(user, 1, null, data));
+		
 	}
 
 };
