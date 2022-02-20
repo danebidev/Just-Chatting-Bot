@@ -1,4 +1,7 @@
-module.exports = {
+import Discord = require('discord.js');
+import { Data } from '../index';
+
+export = {
 
 	name: 'debug',
 	minArgs: 0,
@@ -7,7 +10,7 @@ module.exports = {
 	args: [],
 	helpMessage: 'Aiuta questo povero developer a smattare un po\' di meno',
 
-	execute: function(args, message, client) {
+	execute: function(message: Discord.Message, _args: string[], _data: Data) {
 
 		const embed = {
 			title: 'Test',

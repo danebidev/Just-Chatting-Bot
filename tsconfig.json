@@ -1,8 +1,9 @@
 {
+	"extends": "./tsconfig.options.json",
 	"compilerOptions": {
 	  "outDir": "./build",
 	  "allowJs": true,
-	  "target": "es2021"
+	  "target": "es2021",
 	},
 	"include": ["./src/**/*"]
 }

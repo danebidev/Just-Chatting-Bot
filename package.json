@@ -12,6 +12,7 @@
   "author": "danebidev",
   "license": "ISC",
   "dependencies": {
+    "@types/pg": "^8.6.4",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "pg": "^8.7.3"

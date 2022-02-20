@@ -1,6 +1,8 @@
-const bumpCount = require('../misc/bumpCount');
+import Discord = require('discord.js');
+import bumpCount = require('../misc/bumpCount');
+import { Data } from '../index';
 
-module.exports = {
+export = {
 
 	name: 'bump-increase',
 	minArgs: 1,
@@ -18,21 +20,17 @@ module.exports = {
 	],
 	helpMessage: 'Aumenta i bump fatti da un utente',
 
-	execute: function(args, message, client) {
+	execute: async function (message: Discord.Message, args: string[], data: Data) {
 
-		client.users.fetch(args[0].replaceAll(/@|<|>|!/g, '')).then(user => {
+		const user = await data.client.users.fetch(args[0]!.replaceAll(/@|<|>|!/g, ''))
 
-			if(!args[1]) return bumpCount.changeBumps(user, 1, client);
+		if (!args[1]) return await bumpCount.changeBumps(user, 1, data);
 
-			const quant = Number(args[1]);
-			if(!quant || quant <= 0) return message.reply('Il numero inserito non è valido.');
-			bumpCount.changeBumps(user, Number(args[1]), client);
-			message.reply('Bump aumentati con successo');
-
-		}).catch(err => {
-			message.reply('Non sono riuscito a trovare l\'utente che stai cercando (Probabilmente).');
-			console.error(err);
-		});
+		const quant = Number(args[1]);
+		if (!quant || quant <= 0) return message.reply('Il numero inserito non è valido.');
+		
+		await bumpCount.changeBumps(user, Number(args[1]), data);
+		return message.reply('Bump aumentati con successo');
 
 	},
 

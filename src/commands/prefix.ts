@@ -1,6 +1,7 @@
-const fs = require('fs');
+import Discord = require('discord.js');
+import { Data } from '../index';
 
-module.exports = {
+export = {
 
 	name: 'prefix',
 	minArgs: 1,
@@ -14,14 +15,16 @@ module.exports = {
 	],
 	helpMessage: 'Cambia il prefisso per i comandi del bot',
 
-	execute: function(args, message, client) {
+	execute: async function(message: Discord.Message, args: string[], data: Data) {
 
-		client.config.prefix = args[0];
-		fs.writeFile('./config.json', JSON.stringify(client.config, null, 2), err => {
-			if(err) return console.error(err);
-		});
-		message.reply(`Il prefisso è stato cambiato a \`${client.config.prefix}\``);
+		console.log(args[0]);
+		
+		data.config.set('prefix', args[0]!);
+		data.database.connect().then(client => {
+			client.query(`UPDATE config SET value='${args[0]!}' WHERE name='prefix';`);
+		}).catch(err => console.error(err));
 
+		message.reply(`Il prefisso è stato cambiato a \`${args[0]}\``);
 	}
 
 };
