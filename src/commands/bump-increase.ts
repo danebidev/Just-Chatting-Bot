@@ -1,5 +1,6 @@
 import Discord = require('discord.js');
 import bumpCount = require('../misc/bumpCount');
+import util = require('../misc/util');
 import { Data } from '../index';
 
 export = {
@@ -11,7 +12,7 @@ export = {
 	args: [
 		{
 			name: '<menzione dell\' utente>',
-			explaination: 'Una menzione(@nome dell\' utente) dell\' utente di cui vuoi Aumenta i bump'
+			explaination: 'Una menzione(@nome dell\' utente) dell\' utente di cui vuoi aumentare i bump'
 		},
 		{
 			name: '[quantità]',
@@ -22,7 +23,7 @@ export = {
 
 	execute: async function (message: Discord.Message, args: string[], data: Data) {
 
-		const user = await data.client.users.fetch(args[0]!.replaceAll(/@|<|>|!/g, ''))
+		const user = await data.client.users.fetch(util.getIdByMention(args[0]!));
 
 		if (!args[1]) return await bumpCount.changeBumps(user, 1, message.author, data);
 
