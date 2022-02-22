@@ -5,5 +5,8 @@
 	  "allowJs": true,
 	  "target": "es2021"
 	},
+	"ts-node": {
+		"files": true
+	},
 	"include": ["./src/**/*"]
 }

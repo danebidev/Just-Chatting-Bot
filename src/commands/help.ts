@@ -1,45 +1,45 @@
-import Discord = require('discord.js');
-import { Data } from '../index';
+import Discord = require("discord.js");
+import { Data } from "../index";
 
 export = {
 
-	name: 'help',
+	name: "help",
 	minArgs: 0,
 	maxArgs: 1,
-	syntax: 'help [comando]',
+	syntax: "help [comando]",
 	args: [
 		{
-			name: '[comando]',
-			explaination: 'Il comando di cui vuoi sapere più informazioni'
+			name: "[comando]",
+			explaination: "Il comando di cui vuoi sapere più informazioni"
 		}
 	],
-	helpMessage: 'Ti dà più informazioni sui comandi',
+	helpMessage: "Ti dà più informazioni sui comandi",
 
 	execute: function(message: Discord.Message, args: string[], data: Data): Promise<any> {
 
 		const user = message.author;
 
 		if (args.length == 0) {
-			
+
 			const embed: Discord.MessageEmbedOptions = {
-				
+
 				color: 0x104eb2,
-				title: 'Aiuto',
+				title: "Aiuto",
 				author: { name: message.author.username, iconURL: message.author.defaultAvatarURL },
-				description: 'Messaggio di aiuto con tutti i comandi e le loro spiegazioni',
+				description: "Messaggio di aiuto con tutti i comandi e le loro spiegazioni",
 				fields: [],
 				timestamp: new Date()
-				
-			}
-			
+
+			};
+
 			for (const command of data.commands.values()) {
 
 				const field: Discord.EmbedField = {
 					name: `\`${command.name}\``,
 					value: command.helpMessage,
 					inline: true
-				}	
-				
+				};
+
 				embed.fields!.push(field);
 
 			}
@@ -57,7 +57,7 @@ export = {
 			title: commandName,
 			author: { name: message.author.username, iconURL: message.author.defaultAvatarURL },
 			description: command.helpMessage,
-			fields: [{ name: 'Synax', value: `\`${command.syntax}\``, inline: false }],
+			fields: [{ name: "Synax", value: `\`${command.syntax}\``, inline: false }],
 			timestamp: new Date()
 
 		};

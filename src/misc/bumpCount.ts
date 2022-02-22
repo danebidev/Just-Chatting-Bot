@@ -1,6 +1,6 @@
-import Discord = require('discord.js');
-import logging = require('./logging');
-import { Data } from '../index';
+import Discord = require("discord.js");
+import logging = require("./logging");
+import { Data } from "../index";
 
 export = {
 
@@ -23,17 +23,17 @@ export = {
 		}
 
 		dbClient.release();
-		
+
 		this.updateMessage(user, newValue, data);
 		this.updateRoles(user, newValue, data);
-		logging.logBump({user: user, oldValue: newValue - quant, newValue: newValue, changeAuthor: author}, data);
+		logging.logBump({ user: user, oldValue: newValue - quant, newValue: newValue, changeAuthor: author }, data);
 
 	},
 
 	updateMessage: async function(user: Discord.User, newValue: number, data: Data): Promise<any> {
 
-		const guild = await data.client.guilds.fetch('917119141511589959');
-		const channel = await guild.channels.fetch('927603928252702820') as Discord.TextChannel;
+		const guild = await data.client.guilds.fetch("917119141511589959");
+		const channel = await guild.channels.fetch("927603928252702820") as Discord.TextChannel;
 		const message = (await channel.messages.fetch()).filter((m: Discord.Message) => m.content.startsWith(`<@${user.id}>`)).first()!;
 
 		if(newValue <= 0 && message) return message.delete();
@@ -45,31 +45,31 @@ export = {
 
 	updateRoles: async function(user: Discord.User, newValue: number, data: Data) {
 
-		const guild = await data.client.guilds.fetch('917119141511589959');
-		const bumpatoreRole = (await guild.roles.fetch('923967135682813992'))!;
-		const bumpatorepRole = (await guild.roles.fetch('928385637386690620'))!;
+		const guild = await data.client.guilds.fetch("917119141511589959");
+		const bumpatoreRole = (await guild.roles.fetch("923967135682813992"))!;
+		const bumpatorepRole = (await guild.roles.fetch("928385637386690620"))!;
 		const member = await guild.members.fetch(user.id);
-		
+
 		if(newValue < 50 && (member.roles.cache.has(bumpatoreRole.id) || member.roles.cache.has(bumpatorepRole.id))) {
 			member.roles.remove(bumpatoreRole);
 			member.roles.remove(bumpatorepRole);
 		}
-		
+
 		if(newValue >= 50 && newValue < 100 && !member.roles.cache.has(bumpatoreRole.id)) member.roles.add(bumpatoreRole);
 		if(newValue >= 50 && newValue < 100 && member.roles.cache.has(bumpatorepRole.id)) member.roles.remove(bumpatorepRole);
-		
+
 		if(newValue >= 100 && !member.roles.cache.has(bumpatorepRole.id)) member.roles.add(bumpatorepRole);
 		if(newValue >= 100 && member.roles.cache.has(bumpatoreRole.id)) member.roles.remove(bumpatoreRole);
-			
+
 	},
 
 	autoBumpCount: function(botMessage: Discord.Message, data: Data) {
 
 		const embed = botMessage.embeds[0];
-		if (!embed || !embed.description!.includes('Bump done!')) return;
+		if (!embed || !embed.description!.includes("Bump done!")) return;
 
-		data.client.users.fetch(embed.description!.split(' ')[0]!.replaceAll(/@|<|>/g, '')).then(user => this.changeBumps(user, 1, null, data));
-		
+		data.client.users.fetch(embed.description!.split(" ")[0]!.replaceAll(/@|<|>/g, "")).then(user => this.changeBumps(user, 1, null, data));
+
 	}
 
 };

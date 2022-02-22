@@ -1,19 +1,20 @@
-import Discord = require('discord.js');
-import { Data } from '../index';
+import Discord = require("discord.js");
+import { Data } from "../index";
 
 export = {
 
-	name: 'debug',
+	name: "debug",
 	minArgs: 0,
 	maxArgs: 0,
-	syntax: 'debug',
+	syntax: "debug",
 	args: [],
-	helpMessage: 'Aiuta questo povero developer a smattare un po\' di meno',
+	helpMessage: "Aiuta questo povero developer a smattare un po' di meno",
 
+	// eslint-disable-next-line no-unused-vars
 	execute: function(message: Discord.Message, _args: string[], _data: Data) {
 
 		const embed = {
-			title: 'Test',
+			title: "Test",
 			description: `<@${message.author.id}> Bump done!`
 		};
 
