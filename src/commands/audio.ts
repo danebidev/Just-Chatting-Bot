@@ -1,4 +1,4 @@
-import { Guild, Message } from "discord.js";
+import { Message } from "discord.js";
 import { joinVoiceChannel } from "@discordjs/voice";
 import { Data } from "../index";
 
@@ -14,7 +14,7 @@ const helpArgs = [
 	}
 ];
 
-function execute(message: Message, args: string[], data: Data) {
+function execute(message: Message, _args: string[], _data: Data) {
 
 	if(!message.member!.voice.channel) return message.reply("Non sei in un canale vocale!");
 	if(message.channel.type == "DM") return message.reply("Questo comando funziona solo nei server");
@@ -24,6 +24,8 @@ function execute(message: Message, args: string[], data: Data) {
 		guildId: message.guildId!,
 		adapterCreator: message.guild!.voiceAdapterCreator
 	});
+
+	return message.reply("Work in progress");
 
 }
 
