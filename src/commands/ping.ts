@@ -1,21 +1,27 @@
-import Discord = require("discord.js");
+import { Message } from "discord.js";
 import { Data } from "../index";
 
-export = {
+const name = "ping";
+const minArgs = 0;
+const maxArgs = 0;
+const syntax = "ping";
+const helpMessage = "Controlla il ping del bot";
+const helpArgs: {name: string, explaination: string}[] = [];
 
-	name: "ping",
-	minArgs: 0,
-	maxArgs: 0,
-	syntax: "ping",
-	args: [],
-	helpMessage: "Controlla il ping del bot",
+function execute(message: Message, _args: string[], data: Data) {
 
-	execute: function(message: Discord.Message, _args: string[], data: Data) {
+	message.reply("Pinging...").then(reply => {
+		reply.edit(`Websocket heartbeat: ${data.client.ws.ping}ms.\nRoundtrip latency: ${reply.createdTimestamp - message.createdTimestamp}ms`);
+	});
 
-		message.reply("Pinging...").then(reply => {
-			reply.edit(`Websocket heartbeat: ${data.client.ws.ping}ms.\nRoundtrip latency: ${reply.createdTimestamp - message.createdTimestamp}ms`);
-		});
+}
 
-	},
-
+export {
+	name,
+	minArgs,
+	maxArgs,
+	syntax,
+	helpMessage,
+	helpArgs,
+	execute
 };

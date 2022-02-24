@@ -1,78 +1,84 @@
-import Discord = require("discord.js");
+import { Message, MessageEmbedOptions, EmbedField } from "discord.js";
 import { Data } from "../index";
 
-export = {
+const name = "help";
+const minArgs = 0;
+const maxArgs = 1;
+const syntax = "help [comando]";
+const helpMessage = "Ti dà più informazioni sui comandi";
+const helpArgs = [
+	{
+		name: "[comando]",
+		explaination: "Il comando di cui vuoi sapere più informazioni"
+	}
+];
 
-	name: "help",
-	minArgs: 0,
-	maxArgs: 1,
-	syntax: "help [comando]",
-	args: [
-		{
-			name: "[comando]",
-			explaination: "Il comando di cui vuoi sapere più informazioni"
-		}
-	],
-	helpMessage: "Ti dà più informazioni sui comandi",
+function execute(message: Message, args: string[], data: Data): Promise<any> {
 
-	execute: function(message: Discord.Message, args: string[], data: Data): Promise<any> {
+	const user = message.author;
 
-		const user = message.author;
+	if (args.length == 0) {
 
-		if (args.length == 0) {
-
-			const embed: Discord.MessageEmbedOptions = {
-
-				color: 0x104eb2,
-				title: "Aiuto",
-				author: { name: message.author.username, iconURL: message.author.defaultAvatarURL },
-				description: "Messaggio di aiuto con tutti i comandi e le loro spiegazioni",
-				fields: [],
-				timestamp: new Date()
-
-			};
-
-			for (const command of data.commands.values()) {
-
-				const field: Discord.EmbedField = {
-					name: `\`${command.name}\``,
-					value: command.helpMessage,
-					inline: true
-				};
-
-				embed.fields!.push(field);
-
-			}
-
-			return user.send({ embeds: [embed] });
-		}
-
-		const commandName = args[0]!;
-		if (!data.commands.has(commandName)) return user.send(`Non sono riuscito a trovare il comando \`${commandName}\``);
-		const command = data.commands.get(commandName)!;
-
-		const embed: Discord.MessageEmbedOptions = {
+		const embed: MessageEmbedOptions = {
 
 			color: 0x104eb2,
-			title: commandName,
+			title: "Aiuto",
 			author: { name: message.author.username, iconURL: message.author.defaultAvatarURL },
-			description: command.helpMessage,
-			fields: [{ name: "Synax", value: `\`${command.syntax}\``, inline: false }],
+			description: "Messaggio di aiuto con tutti i comandi e le loro spiegazioni",
+			fields: [],
 			timestamp: new Date()
 
 		};
 
-		for (const arg of command.args) {
-			embed.fields!.push({
-				name: arg.name,
-				value: arg.explaination,
+		for (const command of data.commands.values()) {
+
+			const field: EmbedField = {
+				name: `\`${command.name}\``,
+				value: command.helpMessage,
 				inline: true
-			});
+			};
+
+			embed.fields!.push(field);
+
 		}
 
 		return user.send({ embeds: [embed] });
-
-
 	}
 
+	const commandName = args[0]!;
+	if (!data.commands.has(commandName)) return user.send(`Non sono riuscito a trovare il comando \`${commandName}\``);
+	const command = data.commands.get(commandName)!;
+
+	const embed: MessageEmbedOptions = {
+
+		color: 0x104eb2,
+		title: commandName,
+		author: { name: message.author.username, iconURL: message.author.defaultAvatarURL },
+		description: command.helpMessage,
+		fields: [{ name: "Synax", value: `\`${command.syntax}\``, inline: false }],
+		timestamp: new Date()
+
+	};
+
+	for (const arg of command.helpArgs) {
+		embed.fields!.push({
+			name: arg.name,
+			value: arg.explaination,
+			inline: true
+		});
+	}
+
+	return user.send({ embeds: [embed] });
+
+
+}
+
+export {
+	name,
+	minArgs,
+	maxArgs,
+	syntax,
+	helpMessage,
+	helpArgs,
+	execute
 };

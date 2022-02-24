@@ -1,33 +1,33 @@
 // Imports
-import Discord = require("discord.js");
-import pg = require("pg");
-import fs = require("fs");
-import dotenv = require("dotenv");
+import { Client, Intents, Collection, Message } from "discord.js";
+import { Pool } from "pg";
+import { readdirSync } from "fs";
+import { config } from "dotenv";
 
-dotenv.config();
+config();
 
 
 // Interfaces
-export interface Command {
+interface Command {
 
 	name: string,
 	minArgs: number,
 	maxArgs: number,
 	syntax: string,
-	args: {name: string, explaination: string}[],
 	helpMessage: string
+	helpArgs: {name: string, explaination: string}[],
 	// eslint-disable-next-line no-unused-vars
-	execute: (message: Discord.Message, args: string[], data: Data) => void
+	execute: (message: Message, args: string[], data: Data) => void
 
 }
 
-export interface Data {
+interface Data {
 
-	client: Discord.Client,
-	bumps: Discord.Collection<string, number>,
-	config: Discord.Collection<string, string>
-	database: pg.Pool,
-	commands: Discord.Collection<string, Command>
+	client: Client,
+	bumps: Collection<string, number>,
+	config: Collection<string, string>
+	database: Pool,
+	commands: Collection<string, Command>
 
 }
 
@@ -35,7 +35,7 @@ export interface Data {
 // Functions
 function registerEvents(): void {
 
-	const eventFiles = fs.readdirSync("./src/events").filter(file => file.endsWith(".ts"));
+	const eventFiles = readdirSync("./src/events").filter(file => file.endsWith(".ts"));
 
 	for(const file of eventFiles) {
 		const event = require(`./events/${file}`);
@@ -44,10 +44,10 @@ function registerEvents(): void {
 
 }
 
-function readCommands(): Discord.Collection<string, Command> {
+function readCommands(): Collection<string, Command> {
 
-	const commands = new Discord.Collection<string, Command>();
-	const commandFiles = fs.readdirSync("./src/commands").filter(file => file.endsWith(".ts"));
+	const commands = new Collection<string, Command>();
+	const commandFiles = readdirSync("./src/commands").filter(file => file.endsWith(".ts"));
 
 	for(const file of commandFiles) {
 		const command = require(`./commands/${file}`);
@@ -61,17 +61,17 @@ function readCommands(): Discord.Collection<string, Command> {
 
 // Variables / Properties
 const token = process.env["TOKEN"];
-const client = new Discord.Client({
-	intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES],
+const client = new Client({
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES],
 	partials: ["CHANNEL"]
 });
 
 const data: Data = {
 
 	client: client,
-	bumps: new Discord.Collection<string, number>(),
-	config: new Discord.Collection<string, string>(),
-	database: new pg.Pool({
+	bumps: new Collection<string, number>(),
+	config: new Collection<string, string>(),
+	database: new Pool({
 		connectionString: process.env["DATABASE_URL"] || "postgresql://postgres:1515@localhost:5432/postgres",
 		ssl: process.env["DATABASE_URL"] ? {
 			rejectUnauthorized: false
@@ -104,3 +104,10 @@ data.database.connect().then(dbClient => {
 
 registerEvents();
 client.login(token);
+
+
+// Exports
+export {
+	Command,
+	Data
+};

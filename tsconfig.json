@@ -3,7 +3,8 @@
 	"compilerOptions": {
 	  "outDir": "./build",
 	  "allowJs": true,
-	  "target": "es2021"
+	  "target": "es2021",
+	  "esModuleInterop": true
 	},
 	"ts-node": {
 		"files": true
