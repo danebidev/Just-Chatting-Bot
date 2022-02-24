@@ -61,7 +61,7 @@ function readCommands(): Collection<string, Command> {
 // Variables / Properties
 const token = process.env["TOKEN"];
 const client = new Client({
-	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES],
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
 	partials: ["CHANNEL"]
 });
 
