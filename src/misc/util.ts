@@ -1,6 +1,9 @@
-function getIdByMention(mention: string): string {
+function getIdByMention(mention: string | undefined): string | null {
 
-	return mention.match(/^<@!?(\d+)>$/)![1]!;
+	if(!mention) return null;
+	const result = mention.match(/^<@!?(\d{18})>$/);
+	if(result == null) return null;
+	return result[1]!;
 
 }
 

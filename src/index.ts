@@ -16,7 +16,6 @@ interface Command {
 	syntax: string,
 	helpMessage: string
 	helpArgs: {name: string, explaination: string}[],
-	// eslint-disable-next-line no-unused-vars
 	execute: (message: Message, args: string[], data: Data) => void
 
 }

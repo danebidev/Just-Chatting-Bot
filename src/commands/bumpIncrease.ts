@@ -21,7 +21,10 @@ const helpArgs = [
 
 async function execute(message: Message, args: string[], data: Data) {
 
-	const user = await data.client.users.fetch(getIdByMention(args[0]!));
+	const id = getIdByMention(args[0]);
+	if(!id) return message.reply("La menzione dell'utente non è valida");
+
+	const user = await data.client.users.fetch(id);
 
 	if (!args[1]) return await changeBumps(user, 1, message.author, data);
 
