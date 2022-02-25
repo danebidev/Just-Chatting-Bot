@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
+import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
 import { createReadStream } from "node:fs";
 import { readdirSync } from "fs";
 import { Data } from "../index";
@@ -41,10 +41,13 @@ function execute(message: Message, args: string[], _data: Data) {
 
 	const audios = readdirSync("./audio");
 	if(!audios.includes(args[0] + ".ogg")) return message.reply("L'audio specificato non esiste.");
-	const stream = createReadStream(`./audio/${args[0] + ".ogg"}`);
 
-	const resource = createAudioResource(stream, {
+	const resource = createAudioResource(createReadStream(`./audio/${args[0] + ".ogg"}`), {
 		inputType: StreamType.Arbitrary,
+	});
+
+	player.on(AudioPlayerStatus.Idle, () => {
+		connection.destroy();
 	});
 
 	return player.play(resource);
