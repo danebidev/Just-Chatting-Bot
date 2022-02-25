@@ -1,5 +1,7 @@
 import { Message } from "discord.js";
-import { joinVoiceChannel } from "@discordjs/voice";
+import { createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
+import { createReadStream } from "node:fs";
+import { readdirSync } from "fs";
 import { Data } from "../index";
 
 const name = "audio";
@@ -14,18 +16,38 @@ const helpArgs = [
 	}
 ];
 
-function execute(message: Message, _args: string[], _data: Data) {
+function execute(message: Message, args: string[], _data: Data) {
 
 	if(!message.member!.voice.channel) return message.reply("Non sei in un canale vocale!");
 	if(message.channel.type == "DM") return message.reply("Questo comando funziona solo nei server");
 
-	joinVoiceChannel({
+	const connection = joinVoiceChannel({
 		channelId: message.member!.voice.channelId!,
 		guildId: message.guildId!,
 		adapterCreator: message.guild!.voiceAdapterCreator
 	});
 
-	return message.reply("Work in progress");
+	const player = createAudioPlayer({
+		behaviors: {
+			noSubscriber: NoSubscriberBehavior.Play
+		}
+	});
+
+	connection.subscribe(player);
+
+	player.on("error", error => {
+		console.error("Error:", error.message);
+	});
+
+	const audios = readdirSync("./audio");
+	if(!audios.includes(args[0] + ".ogg")) return message.reply("L'audio specificato non esiste.");
+	const stream = createReadStream(`./audio/${args[0] + ".ogg"}`);
+
+	const resource = createAudioResource(stream, {
+		inputType: StreamType.Arbitrary,
+	});
+
+	return player.play(resource);
 
 }
 
