@@ -56,7 +56,6 @@ async function downloadAudios() {
 		const writeStream = createWriteStream(`./audio/${file.name}`);
 
 		get(link.result.link, res => {
-			console.log("ciao");
 			res.pipe(writeStream);
 			writeStream.on("finish", function() {
 				writeStream.close();
