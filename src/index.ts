@@ -2,7 +2,7 @@
 import { Client, Intents, Collection, Message } from "discord.js";
 import { Pool } from "pg";
 import { get } from "https";
-import { readdirSync, readFileSync, createWriteStream } from "fs";
+import { readdirSync, readFileSync, createWriteStream, existsSync, mkdirSync } from "fs";
 import { config } from "dotenv";
 import { Dropbox, files } from "dropbox";
 import { getDropboxFileSHA256Checksum } from "./misc/util";
@@ -36,6 +36,10 @@ interface Data {
 
 // Functions
 async function downloadAudios() {
+
+	if (!existsSync("./audio")) {
+		mkdirSync("./audio");
+	}
 
 	const dropbox = new Dropbox({ accessToken: process.env["DROPBOXACCESSTOKEN"] });
 	const audios = (await dropbox.filesListFolder({ path: "/bot-audios" })).result.entries as files.FileMetadataReference[];
