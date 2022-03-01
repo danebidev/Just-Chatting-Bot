@@ -1,12 +1,11 @@
 import { Message } from "discord.js";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
-import { createReadStream } from "node:fs";
-import { readdirSync } from "fs";
+import { readdirSync, createReadStream } from "fs";
 import { Data } from "../index";
 
 const name = "audio";
 const minArgs = 1;
-const maxArgs = 1;
+const maxArgs = 2;
 const syntax = "audio <audio da riprodurre>";
 const helpMessage = "Riproduci un audio";
 const helpArgs = [
@@ -20,6 +19,9 @@ function execute(message: Message, args: string[], _data: Data) {
 
 	if(!message.member!.voice.channel) return message.reply("Non sei in un canale vocale!");
 	if(message.channel.type == "DM") return message.reply("Questo comando funziona solo nei server");
+
+	const audioName = getAudio(args);
+	if(!audioName) return message.reply("L'audio specificato non è stato trovato");
 
 	const connection = joinVoiceChannel({
 		channelId: message.member!.voice.channelId!,
@@ -39,10 +41,7 @@ function execute(message: Message, args: string[], _data: Data) {
 		console.error("Error:", error.message);
 	});
 
-	const audios = readdirSync("./audio");
-	if(!audios.includes(args[0] + ".ogg")) return message.reply("L'audio specificato non esiste.");
-
-	const resource = createAudioResource(createReadStream(`./audio/${args[0] + ".ogg"}`), {
+	const resource = createAudioResource(createReadStream(`./audio/${audioName}`), {
 		inputType: StreamType.Arbitrary,
 	});
 
@@ -51,6 +50,38 @@ function execute(message: Message, args: string[], _data: Data) {
 	});
 
 	return player.play(resource);
+
+}
+
+function getAudio(args: string[]) {
+
+	const audios = readdirSync("./audio");
+	let audioName = "";
+
+	if(args[1]) {
+
+		audioName = `${args[0]!.toLowerCase()} ${args[1].toLowerCase()}.ogg`;
+		if(!audios.includes(audioName)) return null;
+
+	} else if (args[0]!.length == 2) {
+
+		for(const audio of audios) {
+
+			const split = audio.substring(0, audio.length - 4).split(" ");
+			if(split[0]!.at(0) == args[0]!.at(0) && split[1]!.at(0) == args[0]!.at(1)) {
+				audioName = audio;
+				break;
+			}
+
+		}
+
+		if(audioName == "") return null;
+
+	} else {
+		return null;
+	}
+
+	return audioName;
 
 }
 

@@ -1,8 +1,11 @@
 // Imports
 import { Client, Intents, Collection, Message } from "discord.js";
 import { Pool } from "pg";
-import { readdirSync } from "fs";
+import { get } from "https";
+import { readdirSync, readFileSync, createWriteStream } from "fs";
 import { config } from "dotenv";
+import { Dropbox, files } from "dropbox";
+import { getDropboxFileSHA256Checksum } from "./misc/util";
 
 config();
 
@@ -32,6 +35,34 @@ interface Data {
 
 
 // Functions
+async function downloadAudios() {
+
+	const dropbox = new Dropbox({ accessToken: process.env["DROPBOXACCESSTOKEN"] });
+	const audios = (await dropbox.filesListFolder({ path: "/bot-audios" })).result.entries as files.FileMetadataReference[];
+	const audioFiles = readdirSync("./audio");
+
+	for(const file of audios) {
+
+		if(audioFiles.includes(file.name)) {
+			const fileHash = getDropboxFileSHA256Checksum(readFileSync(`./audio/${file.name}`));
+			if(fileHash == file.content_hash) continue;
+		}
+
+		const link = await dropbox.filesGetTemporaryLink({ path: file.path_lower! });
+		const writeStream = createWriteStream(`./audio/${file.name}`);
+
+		get(link.result.link, res => {
+			console.log("ciao");
+			res.pipe(writeStream);
+			writeStream.on("finish", function() {
+				writeStream.close();
+			});
+		});
+
+	}
+
+}
+
 function registerEvents(): void {
 
 	const eventFiles = readdirSync("./src/events").filter(file => file.endsWith(".ts"));
@@ -101,6 +132,7 @@ data.database.connect().then(dbClient => {
 	});
 }).catch(err => console.error(err));
 
+downloadAudios();
 registerEvents();
 client.login(token);
 
