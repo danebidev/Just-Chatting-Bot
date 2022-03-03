@@ -20,7 +20,7 @@ async function logBump(bump: { user: User, oldValue: number, newValue: number, c
 
 	};
 
-	if (bump.changeAuthor && bump.reason) embed.description += `\n**Change author:** <@${bump.changeAuthor.id}\n**Reason:** ${bump.reason}>`;
+	if (bump.changeAuthor && bump.reason) embed.description += `\n**Change author:** <@${bump.changeAuthor.id}>\n**Reason:** ${bump.reason}`;
 
 	channel.send({ embeds: [embed] });
 }
