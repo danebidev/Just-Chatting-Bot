@@ -1,11 +1,11 @@
 // Imports
 import { Client, Intents, Collection, Message } from "discord.js";
 import { Pool } from "pg";
-import { get } from "https";
-import { readdirSync, readFileSync, createWriteStream, existsSync, mkdirSync } from "fs";
+// import { get } from "https";
+import { readdirSync, existsSync, mkdirSync, createWriteStream } from "fs";
 import { config } from "dotenv";
-import { Dropbox, files } from "dropbox";
-import { getDropboxFileSHA256Checksum } from "./misc/util";
+import { Storage } from "megajs";
+// import { getDropboxFileSHA256Checksum } from "./misc/util";
 
 config();
 
@@ -41,29 +41,20 @@ async function downloadAudios() {
 		mkdirSync("./audio");
 	}
 
-	const dropbox = new Dropbox({ accessToken: process.env["DROPBOXACCESSTOKEN"] });
-	const audios = (await dropbox.filesListFolder({ path: "/bot-audios" })).result.entries as files.FileMetadataReference[];
-	const audioFiles = readdirSync("./audio");
+	const mega = await new Storage({
+		email: process.env["MEGAEMAIL"]!,
+		password: process.env["MEGAPASSWORD"]!,
+		userAgent: "Just Chatting Bot/1.0"
+	}).ready;
+
+	const audios = mega.root.children!.find(folder => folder.name == "audios")!.children!;
 
 	for(const file of audios) {
 
-		if(audioFiles.includes(file.name)) {
-			const fileHash = getDropboxFileSHA256Checksum(readFileSync(`./audio/${file.name}`));
-			if(fileHash == file.content_hash) continue;
-		}
-
-		const link = await dropbox.filesGetTemporaryLink({ path: file.path_lower! });
-		const writeStream = createWriteStream(`./audio/${file.name}`);
-
-		get(link.result.link, res => {
-			res.pipe(writeStream);
-			writeStream.on("finish", function() {
-				writeStream.close();
-			});
-		});
+		const stream = createWriteStream(`./audio/${file.name}`);
+		file.download({}).pipe(stream);
 
 	}
-
 }
 
 function registerEvents(): void {
@@ -93,7 +84,7 @@ function readCommands(): Collection<string, Command> {
 
 
 // Variables / Properties
-const token = process.env["TOKEN"];
+// const token = process.env["TOKEN"];
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
 	partials: ["CHANNEL"]
@@ -137,7 +128,7 @@ data.database.connect().then(dbClient => {
 
 downloadAudios();
 registerEvents();
-client.login(token);
+// client.login(token);
 
 
 // Exports
