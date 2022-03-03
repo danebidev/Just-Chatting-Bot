@@ -84,7 +84,7 @@ function readCommands(): Collection<string, Command> {
 
 
 // Variables / Properties
-// const token = process.env["TOKEN"];
+const token = process.env["TOKEN"];
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
 	partials: ["CHANNEL"]
@@ -128,7 +128,7 @@ data.database.connect().then(dbClient => {
 
 downloadAudios();
 registerEvents();
-// client.login(token);
+client.login(token);
 
 
 // Exports
