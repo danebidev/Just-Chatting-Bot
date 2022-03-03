@@ -6,7 +6,7 @@ const minArgs = 0;
 const maxArgs = 0;
 const syntax = "ping";
 const helpMessage = "Controlla il ping del bot";
-const helpArgs: {name: string, explaination: string}[] = [];
+const helpArgs: {name: string, explanation: string}[] = [];
 
 function execute(message: Message, _args: string[], data: Data) {
 

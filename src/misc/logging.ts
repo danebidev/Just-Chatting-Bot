@@ -1,7 +1,7 @@
 import { User, TextChannel, MessageEmbedOptions } from "discord.js";
 import { Data } from "../index";
 
-async function logBump(bump: { user: User, oldValue: number, newValue: number, changeAuthor: User | null }, data: Data) {
+async function logBump(bump: { user: User, oldValue: number, newValue: number, changeAuthor?: User, reason?: string }, data: Data) {
 
 	const guild = await data.client.guilds.fetch("917119141511589959");
 	const channel = await guild.channels.fetch("944983812687941632") as TextChannel;
@@ -20,7 +20,7 @@ async function logBump(bump: { user: User, oldValue: number, newValue: number, c
 
 	};
 
-	if (bump.changeAuthor) embed.description += `\n**Change author:** <@${bump.changeAuthor.id}>`;
+	if (bump.changeAuthor && bump.reason) embed.description += `\n**Change author:** <@${bump.changeAuthor.id}\n**Reason:** ${bump.reason}>`;
 
 	channel.send({ embeds: [embed] });
 }

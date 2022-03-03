@@ -9,7 +9,7 @@ const helpMessage = "Cambia il prefisso per i comandi del bot";
 const helpArgs = [
 	{
 		name: "<nuovo prefisso>",
-		explaination: "Il nuovo prefisso per i comandi del bot"
+		explanation: "Il nuovo prefisso per i comandi del bot"
 	}
 ];
 

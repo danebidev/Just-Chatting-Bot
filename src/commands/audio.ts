@@ -11,7 +11,7 @@ const helpMessage = "Riproduci un audio";
 const helpArgs = [
 	{
 		name: "<audio da riprodurre>",
-		explaination: "Il nome dell'audio da riprodurre"
+		explanation: "Il nome dell'audio da riprodurre"
 	}
 ];
 

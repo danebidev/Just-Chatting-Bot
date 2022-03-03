@@ -9,7 +9,7 @@ const helpMessage = "Ti dà più informazioni sui comandi";
 const helpArgs = [
 	{
 		name: "[comando]",
-		explaination: "Il comando di cui vuoi sapere più informazioni"
+		explanation: "Il comando di cui vuoi sapere più informazioni"
 	}
 ];
 
@@ -63,7 +63,7 @@ function execute(message: Message, args: string[], data: Data): Promise<any> {
 	for (const arg of command.helpArgs) {
 		embed.fields!.push({
 			name: arg.name,
-			value: arg.explaination,
+			value: arg.explanation,
 			inline: true
 		});
 	}

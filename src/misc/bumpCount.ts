@@ -2,7 +2,7 @@ import { Message, User, TextChannel } from "discord.js";
 import { logBump } from "./logging";
 import { Data } from "../index";
 
-async function changeBumps(user: User, quant: number, author: User | null, data: Data) {
+async function changeBumps(user: User, quant: number, data: Data, author?: User, reason?: string) {
 
 	const newValue = (data.bumps.get(user.id) || 0) + quant;
 	const dbClient = await data.database.connect();
@@ -24,7 +24,7 @@ async function changeBumps(user: User, quant: number, author: User | null, data:
 
 	updateMessage(user, newValue, data);
 	updateRoles(user, newValue, data);
-	logBump({ user: user, oldValue: newValue - quant, newValue: newValue, changeAuthor: author }, data);
+	logBump({ user: user, oldValue: newValue - quant, newValue: newValue, changeAuthor: author, reason: reason }, data);
 
 }
 
@@ -48,17 +48,14 @@ async function updateRoles(user: User, newValue: number, data: Data) {
 	const bumpatorepRole = (await guild.roles.fetch("928385637386690620"))!;
 	const member = await guild.members.fetch(user.id);
 
-	if (newValue < 50 && (member.roles.cache.has(bumpatoreRole.id) || member.roles.cache.has(bumpatorepRole.id))) {
+	if(newValue < 50) return;
+	if(newValue >= 50 && newValue < 100) member.roles.add(bumpatoreRole);
+	if(newValue >= 100) {
 		member.roles.remove(bumpatoreRole);
-		member.roles.remove(bumpatorepRole);
+		member.roles.add(bumpatorepRole);
 	}
 
-	if (newValue >= 50 && newValue < 100 && !member.roles.cache.has(bumpatoreRole.id)) member.roles.add(bumpatoreRole);
-	if (newValue >= 50 && newValue < 100 && member.roles.cache.has(bumpatorepRole.id)) member.roles.remove(bumpatorepRole);
-
-	if (newValue >= 100 && !member.roles.cache.has(bumpatorepRole.id)) member.roles.add(bumpatorepRole);
-	if (newValue >= 100 && member.roles.cache.has(bumpatoreRole.id)) member.roles.remove(bumpatoreRole);
-
+	return;
 }
 
 function autoBumpCount(botMessage: Message, data: Data) {
@@ -66,7 +63,7 @@ function autoBumpCount(botMessage: Message, data: Data) {
 	const embed = botMessage.embeds[0];
 	if (!embed || !embed.description!.includes("Bump done!")) return;
 
-	data.client.users.fetch(embed.description!.split(" ")[0]!.replaceAll(/@|<|>/g, "")).then(user => changeBumps(user, 1, null, data));
+	data.client.users.fetch(embed.description!.split(" ")[0]!.replaceAll(/@|<|>/g, "")).then(user => changeBumps(user, 1, data));
 
 }
 
