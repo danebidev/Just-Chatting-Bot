@@ -18,7 +18,7 @@ interface Command {
 	maxArgs: number,
 	syntax: string,
 	helpMessage: string
-	helpArgs: {name: string, explaination: string}[],
+	helpArgs: {name: string, explanation: string}[],
 	execute: (message: Message, args: string[], data: Data) => void
 
 }
