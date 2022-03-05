@@ -1,5 +1,5 @@
 import { GuildMember } from "discord.js";
-import { Data } from "../index";
+import { Data } from "..";
 
 const name = "ready";
 

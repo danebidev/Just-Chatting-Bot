@@ -1,6 +1,6 @@
-import { Message, User, TextChannel } from "discord.js";
+import { Message, User, TextChannel, Guild, Role } from "discord.js";
 import { logBump } from "./logging";
-import { Data } from "../index";
+import { Data } from "..";
 
 async function changeBumps(user: User, quant: number, data: Data, author?: User, reason?: string) {
 
@@ -28,31 +28,28 @@ async function changeBumps(user: User, quant: number, data: Data, author?: User,
 
 }
 
-async function updateMessage(user: User, newValue: number, data: Data): Promise<any> {
+async function updateMessage(user: User, newValue: number, data: Data) {
 
-	const guild = await data.client.guilds.fetch("917119141511589959");
-	const channel = await guild.channels.fetch("927603928252702820") as TextChannel;
+	const channel = (data.config!.get("bumpCountChannel") as TextChannel);
 	const message = (await channel.messages.fetch()).filter((m: Message) => m.content.startsWith(`<@${user.id}>`)).first()!;
 
 	if (newValue <= 0 && message) return message.delete();
 
 	if (!message && newValue >= 1) return channel.send(`<@${user.id}>: ${newValue}`);
-	message.edit(`<@${user.id}>: ${newValue}`);
+	return message.edit(`<@${user.id}>: ${newValue}`);
 
 }
 
 async function updateRoles(user: User, newValue: number, data: Data) {
 
-	const guild = await data.client.guilds.fetch("917119141511589959");
-	const bumpatoreRole = (await guild.roles.fetch("923967135682813992"))!;
-	const bumpatorepRole = (await guild.roles.fetch("928385637386690620"))!;
-	const member = await guild.members.fetch(user.id);
+	const member = await (data.config!.get("guild") as Guild).members.fetch(user.id);
+	const bumpatoreRole = data.config!.get("bumpatoreRole") as Role;
 
 	if(newValue < 50) return;
 	if(newValue >= 50 && newValue < 100) member.roles.add(bumpatoreRole);
 	if(newValue >= 100) {
 		member.roles.remove(bumpatoreRole);
-		member.roles.add(bumpatorepRole);
+		member.roles.add(data.config!.get("bumpatorePlusRole") as Role);
 	}
 
 	return;

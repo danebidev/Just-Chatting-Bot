@@ -1,51 +1,43 @@
-import { Message } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { changeBumps } from "../misc/bumpCount";
-import { getIdByMention } from "../misc/util";
-import { Data } from "../index";
+import { Data } from "..";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
-const name = "bump-decrease";
-const minArgs = 3;
-const maxArgs = 3;
+const commandData = new SlashCommandBuilder()
+	.setName("bumpdecrease")
+	.setDescription("Diminuisci i bump fatti da un utente")
+	.addUserOption(option => option
+		.setName("utente")
+		.setDescription("Una menzione dell' utente di cui vuoi diminuire i bump")
+		.setRequired(true))
+	.addStringOption(option => option
+		.setName("motivo")
+		.setDescription("La ragione per cui vuoi diminire i bump")
+		.setRequired(true))
+	.addIntegerOption(option => option
+		.setName("quanto")
+		.setDescription("Di quanto diminuire i bump dell'utente")
+		.setRequired(false));
+
 const syntax = "bump-decrease <menzione dell'utente> [quantità]";
-const helpMessage = "Diminuisci i bump fatti da un utente";
-const helpArgs = [
-	{
-		name: "<menzione all' utente>",
-		explanation: "Una menzione(@nome dell' utente) dell' utente di cui vuoi diminuire i bump"
-	},
-	{
-		name: "<quantità>",
-		explanation: "Di quanto diminuire i bump dell'utente"
-	},
-	{
-		name: "<ragione>",
-		explanation: "La ragione per cui si ha diminuito i bump"
-	}
-];
 
-async function execute(message: Message, args: string[], data: Data) {
+async function execute(interaction: CommandInteraction, data: Data) {
 
-	const id = getIdByMention(args[0]);
-	if(!id) return message.reply("La menzione dell'utente non è valida");
+	const user = interaction.options.getUser("utente")!;
+	const quant = interaction.options.getInteger("quanto");
+	const reason = interaction.options.getString("motivo")!;
 
-	const user = await data.client.users.fetch(id);
+	if (!quant) return await changeBumps(user, -1, data, interaction.user, reason);
 
-	if (!args[1]) return await changeBumps(user, -1, data, message.author, args[2]);
+	if (quant <= 0) return interaction.reply({ content: "Il numero inserito non è valido.", ephemeral: true });
 
-	const quant = Number(args[1]);
-	if (!quant || quant <= 0) return message.reply("Il numero inserito non è valido.");
-
-	await changeBumps(user, -Number(args[1]), data, message.author, args[2]);
-	message.reply("Bump diminuiti con successo");
+	await changeBumps(user, -quant, data, interaction.user, reason);
+	interaction.reply({ content: "Bump diminuiti con successo", ephemeral: true });
 
 }
 
 export {
-	name,
-	minArgs,
-	maxArgs,
+	commandData,
 	syntax,
-	helpMessage,
-	helpArgs,
 	execute
 };

@@ -1,37 +1,41 @@
-import { Message } from "discord.js";
+import { CommandInteraction, GuildMember } from "discord.js";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
 import { readdirSync, createReadStream } from "fs";
-import { Data } from "../index";
+import { Data } from "..";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
-const name = "audio";
-const minArgs = 1;
-const maxArgs = 2;
+const commandData = new SlashCommandBuilder()
+	.setName("audio")
+	.setDescription("Riproduci un audio")
+	.addStringOption(option => option
+		.setName("audio")
+		.setDescription("L'audio da riprodurre")
+		.setRequired(true));
+
 const syntax = "audio <audio da riprodurre>";
-const helpMessage = "Riproduci un audio";
-const helpArgs = [
-	{
-		name: "<audio da riprodurre>",
-		explanation: "Il nome dell'audio da riprodurre"
-	}
-];
 
-function execute(message: Message, args: string[], _data: Data) {
+async function execute(interaction: CommandInteraction, data: Data) {
 
-	if(!message.member!.voice.channel) return message.reply("Non sei in un canale vocale!");
-	if(message.channel.type == "DM") return message.reply("Questo comando funziona solo nei server");
+	if (!(interaction.member! as GuildMember).voice.channel) return interaction.reply({ content: "Non sei in un canale vocale!", ephemeral: true });
+	if (interaction.channel!.type == "DM") return interaction.reply({ content: "Questo comando funziona solo nei server", ephemeral: true });
 
-	const audioName = getAudio(args);
-	if(!audioName) return message.reply("L'audio specificato non è stato trovato");
+	const audioName = getAudio(interaction);
+	if (!audioName) return interaction.reply({ content: "L'audio specificato non è stato trovato", ephemeral: true });
+
+
+	const guild = await data.client.guilds.fetch("748232983768465408")!;
+	const member = await guild.members.fetch("441231462759661569")!;
+	const voiceChannel = member.voice.channel!;
 
 	const connection = joinVoiceChannel({
-		channelId: message.member!.voice.channelId!,
-		guildId: message.guildId!,
-		adapterCreator: message.guild!.voiceAdapterCreator
+		channelId: voiceChannel.id,
+		guildId: guild.id,
+		adapterCreator: voiceChannel.guild.voiceAdapterCreator
 	});
 
 	const player = createAudioPlayer({
 		behaviors: {
-			noSubscriber: NoSubscriberBehavior.Play
+			noSubscriber: NoSubscriberBehavior.Pause
 		}
 	});
 
@@ -49,48 +53,42 @@ function execute(message: Message, args: string[], _data: Data) {
 		connection.destroy();
 	});
 
-	return player.play(resource);
+	player.play(resource);
+
+	return interaction.reply("Riproduzione audio iniziata");
 
 }
 
-function getAudio(args: string[]) {
+function getAudio(interaction: CommandInteraction) {
 
+	const inputAudio = interaction.options.getString("audio")!.split(/\s+/);
 	const audios = readdirSync("./audio");
 	let audioName = "";
+	if (inputAudio.length > 2) return interaction.reply("L'audio non è valido!");
 
-	if(args[1]) {
+	if (inputAudio.length == 2) {
 
-		audioName = `${args[0]!.toLowerCase()} ${args[1].toLowerCase()}.ogg`;
-		if(!audios.includes(audioName)) return null;
+		audioName = `${inputAudio[0]!.toLowerCase()} ${inputAudio[1]!.toLowerCase()}-${inputAudio[0]!.at(0)! + inputAudio[1]!.at(0)!}.ogg`;
+		if (!audios.includes(audioName)) return null;
 
-	} else if (args[0]!.length == 2) {
+	} else if (inputAudio[0]!.length == 2) {
 
-		for(const audio of audios) {
-
-			const split = audio.substring(0, audio.length - 4).split(" ");
-			if(split[0]!.at(0) == args[0]!.at(0) && split[1]!.at(0) == args[0]!.at(1)) {
+		for (const audio of audios) {
+			if (audio.includes(inputAudio[0]!)) {
 				audioName = audio;
 				break;
 			}
-
 		}
-
-		if(audioName == "") return null;
-
-	} else {
-		return null;
 	}
+
+	if (audioName == "") return null;
 
 	return audioName;
 
 }
 
 export {
-	name,
-	minArgs,
-	maxArgs,
+	commandData,
 	syntax,
-	helpMessage,
-	helpArgs,
 	execute
 };

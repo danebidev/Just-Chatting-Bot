@@ -1,15 +1,13 @@
 import { GuildMember, TextChannel } from "discord.js";
-import { Data } from "../index";
+import { Data } from "..";
 
 const name = "guildMemberRemove";
 
 async function execute(member: GuildMember, data: Data) {
 
-	if (data.bumps.get(member.id)! <= 0) return;
+	if (data.bumps.get(member.user.id)! <= 0) return;
 
-	const guild = await data.client.guilds.fetch("917119141511589959");
-	const channel = await guild.channels.fetch("927603928252702820") as TextChannel;
-	const message = (await channel!.messages!.fetch()).filter((m) => m.content.startsWith(`<@${member.id}>`)).first()!;
+	const message = (await (data.config!.get("bumpCountChannel") as TextChannel).messages!.fetch()).filter((m) => m.content.startsWith(`<@${member.user.id}>`)).first()!;
 
 	await message.delete();
 
