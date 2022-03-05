@@ -21,7 +21,7 @@ async function downloadAudios() {
 	for(const file of audios) {
 
 		if(audioFiles.includes(file.name!)) continue;
-		const stream = createWriteStream(`../audio/${file.name}`);
+		const stream = createWriteStream(`./audio/${file.name}`);
 		file.download({}).pipe(stream);
 
 	}
