@@ -1,4 +1,4 @@
-import { downloadAudios, registerEvents, readCommands, readConfig } from "./misc/util";
+import { downloadAudios, registerEvents, readCommands } from "./misc/util";
 import { Client, Intents, Collection, CommandInteraction } from "discord.js";
 import { Pool } from "pg";
 import { config } from "dotenv";
@@ -26,8 +26,8 @@ interface Data {
 
 
 const client = new Client({
-	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MEMBERS],
-	partials: ["CHANNEL", "GUILD_MEMBER", "USER", "MESSAGE"],
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_PRESENCES],
+	partials: ["CHANNEL", "GUILD_MEMBER", "USER", "MESSAGE"]
 });
 
 const data: Data = {
@@ -47,7 +47,6 @@ const data: Data = {
 
 client.login(process.env["TOKEN"]);
 
-readConfig(client).then(configuration => data.config = configuration);
 downloadAudios();
 registerEvents(data);
 

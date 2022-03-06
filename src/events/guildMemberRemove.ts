@@ -1,5 +1,5 @@
 import { GuildMember, TextChannel } from "discord.js";
-import { Data } from "..";
+import { Data } from "../index";
 
 const name = "guildMemberRemove";
 

@@ -1,5 +1,5 @@
 import { Interaction } from "discord.js";
-import { Data } from "..";
+import { Data } from "../index";
 
 const name = "interactionCreate";
 

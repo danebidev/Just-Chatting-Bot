@@ -1,5 +1,5 @@
 import { User, MessageEmbedOptions, GuildTextBasedChannel } from "discord.js";
-import { Data } from "..";
+import { Data } from "../index";
 
 async function logBump(bump: { user: User, oldValue: number, newValue: number, changeAuthor?: User, reason?: string }, data: Data) {
 

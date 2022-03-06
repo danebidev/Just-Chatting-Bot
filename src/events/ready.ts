@@ -1,10 +1,17 @@
 import { GuildMember } from "discord.js";
-import { Data } from "..";
+import { Data } from "../index";
+import { readConfig } from "../misc/util";
 
 const name = "ready";
 
-function execute(_member: GuildMember, _data: Data) {
-	console.log("Ready!");
+function execute(_member: GuildMember, data: Data) {
+
+	readConfig(data.client).then(configuration => {
+
+		data.config = configuration;
+		console.log("Ready!");
+
+	});
 }
 
 export {

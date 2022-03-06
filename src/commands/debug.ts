@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { Data } from "..";
+import { Data } from "../index";
 
 const commandData = new SlashCommandBuilder()
 	.setName("debug")

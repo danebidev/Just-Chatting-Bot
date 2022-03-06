@@ -1,7 +1,7 @@
 import { CommandInteraction, GuildMember } from "discord.js";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
 import { readdirSync, createReadStream } from "fs";
-import { Data } from "..";
+import { Data } from "../index";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 const commandData = new SlashCommandBuilder()
@@ -14,7 +14,7 @@ const commandData = new SlashCommandBuilder()
 
 const syntax = "audio <audio da riprodurre>";
 
-async function execute(interaction: CommandInteraction, data: Data) {
+async function execute(interaction: CommandInteraction, _data: Data) {
 
 	if (!(interaction.member! as GuildMember).voice.channel) return interaction.reply({ content: "Non sei in un canale vocale!", ephemeral: true });
 	if (interaction.channel!.type == "DM") return interaction.reply({ content: "Questo comando funziona solo nei server", ephemeral: true });
@@ -22,38 +22,31 @@ async function execute(interaction: CommandInteraction, data: Data) {
 	const audioName = getAudio(interaction);
 	if (!audioName) return interaction.reply({ content: "L'audio specificato non è stato trovato", ephemeral: true });
 
-
-	const guild = await data.client.guilds.fetch("748232983768465408")!;
-	const member = await guild.members.fetch("441231462759661569")!;
-	const voiceChannel = member.voice.channel!;
-
-	const connection = joinVoiceChannel({
-		channelId: voiceChannel.id,
-		guildId: guild.id,
-		adapterCreator: voiceChannel.guild.voiceAdapterCreator
-	});
-
 	const player = createAudioPlayer({
 		behaviors: {
 			noSubscriber: NoSubscriberBehavior.Pause
 		}
 	});
 
-	connection.subscribe(player);
-
-	player.on("error", error => {
-		console.error("Error:", error.message);
-	});
-
 	const resource = createAudioResource(createReadStream(`./audio/${audioName}`), {
 		inputType: StreamType.Arbitrary,
 	});
 
+	player.play(resource);
+
+	const member = interaction.member as GuildMember;
+
+	const connection = joinVoiceChannel({
+		channelId: member.voice.channel!.id,
+		guildId: member.guild.id,
+		adapterCreator: member.guild.voiceAdapterCreator
+	});
+
+	connection.subscribe(player);
+
 	player.on(AudioPlayerStatus.Idle, () => {
 		connection.destroy();
 	});
-
-	player.play(resource);
 
 	return interaction.reply("Riproduzione audio iniziata");
 

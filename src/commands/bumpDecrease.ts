@@ -1,6 +1,6 @@
 import { CommandInteraction } from "discord.js";
 import { changeBumps } from "../misc/bumpCount";
-import { Data } from "..";
+import { Data } from "../index";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 const commandData = new SlashCommandBuilder()

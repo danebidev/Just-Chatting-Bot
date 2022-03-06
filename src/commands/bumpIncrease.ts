@@ -1,5 +1,5 @@
 import { changeBumps } from "../misc/bumpCount";
-import { Data } from "..";
+import { Data } from "../index";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 

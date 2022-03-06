@@ -1,6 +1,6 @@
 import { Message, User, TextChannel, Guild, Role } from "discord.js";
 import { logBump } from "./logging";
-import { Data } from "..";
+import { Data } from "../index";
 
 async function changeBumps(user: User, quant: number, data: Data, author?: User, reason?: string) {
 
@@ -44,15 +44,19 @@ async function updateRoles(user: User, newValue: number, data: Data) {
 
 	const member = await (data.config!.get("guild") as Guild).members.fetch(user.id);
 	const bumpatoreRole = data.config!.get("bumpatoreRole") as Role;
+	const bumpatorePlusRole = data.config!.get("bumpatorePlusRole") as Role;
 
-	if(newValue < 50) return;
-	if(newValue >= 50 && newValue < 100) member.roles.add(bumpatoreRole);
-	if(newValue >= 100) {
+	if(newValue < 50) {
+		member.roles.remove([bumpatoreRole, bumpatorePlusRole]);
+	} else if(newValue >= 100) {
 		member.roles.remove(bumpatoreRole);
-		member.roles.add(data.config!.get("bumpatorePlusRole") as Role);
+		member.roles.add(bumpatorePlusRole);
+	} else {
+		member.roles.remove(bumpatorePlusRole);
+		member.roles.add(bumpatoreRole);
 	}
 
-	return;
+
 }
 
 function autoBumpCount(botMessage: Message, data: Data) {

@@ -1,7 +1,7 @@
 import { Client, Collection, Guild } from "discord.js";
 import { readdirSync, existsSync, mkdirSync, createWriteStream } from "fs";
 import { Storage } from "megajs";
-import { Command, Data } from "..";
+import { Command, Data } from "../index";
 
 async function downloadAudios() {
 
