@@ -57,7 +57,7 @@ function getAudio(interaction: CommandInteraction) {
 	const inputAudio = interaction.options.getString("audio")!.split(/\s+/);
 	const audios = readdirSync("./audio");
 	let audioName = "";
-	if (inputAudio.length > 2) return interaction.reply("L'audio non è valido!");
+	if (inputAudio.length > 2) return null;
 
 	if (inputAudio.length == 2) {
 

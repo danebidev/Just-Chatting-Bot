@@ -32,7 +32,7 @@ async function execute(interaction: CommandInteraction, data: Data) {
 	if (quant <= 0) return interaction.reply({ content: "Il numero inserito non è valido.", ephemeral: true });
 
 	changeBumps(user, quant, data, interaction.user, reason);
-	return interaction.reply({ content: "Bump aumentati con successo", ephemeral:true });
+	return interaction.reply("Bump aumentati con successo");
 
 }
 
