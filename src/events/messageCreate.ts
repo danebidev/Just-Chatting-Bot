@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { Message } from "discord.js";
 import { Data } from "../index";
 import { autoBumpCount } from "../misc/bumpCount";
 
