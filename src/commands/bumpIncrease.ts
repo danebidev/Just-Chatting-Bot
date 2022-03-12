@@ -1,25 +1,6 @@
 import { changeBumps } from "../misc/bumpCount";
-import { Data } from "../index";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandData, Data } from "../index";
 import { CommandInteraction } from "discord.js";
-
-const commandData = new SlashCommandBuilder()
-	.setName("bumpincrease")
-	.setDescription("Aumenta i bump fatti da un utente")
-	.addUserOption(option => option
-		.setName("utente")
-		.setDescription("Una menzione dell' utente di cui vuoi aumentare i bump")
-		.setRequired(true))
-	.addStringOption(option => option
-		.setName("motivo")
-		.setDescription("La ragione per cui si ha aumentato i bump")
-		.setRequired(true))
-	.addIntegerOption(option => option
-		.setName("quanto")
-		.setDescription("Di quanto aumentare i bump dell'utente")
-		.setRequired(false));
-
-const syntax = "bump-increase <menzione all'utente> [quantità]";
 
 async function execute(interaction: CommandInteraction, data: Data) {
 
@@ -36,8 +17,33 @@ async function execute(interaction: CommandInteraction, data: Data) {
 
 }
 
+const commandData: CommandData = {
+	name: "bumpincrease",
+	description: "Aumenta i bump fatti da un utente",
+	default_permission: false,
+	options: [
+		{
+			name: "utente",
+			description: "Una menzione dell' utente di cui vuoi aumentare i bump",
+			required: true,
+			type: 6
+		},
+		{
+			name: "ragione",
+			description: "La ragione per cui si ha aumentato i bump",
+			required: true,
+			type: 3
+		},
+		{
+			name: "quanto",
+			description: "Di quanto aumentare i bump dell'utente",
+			required: false,
+			type: 4
+		},
+	]
+};
+
 export {
-	commandData,
-	syntax,
-	execute
+	execute,
+	commandData
 };

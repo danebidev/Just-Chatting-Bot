@@ -1,25 +1,6 @@
 import { CommandInteraction } from "discord.js";
 import { changeBumps } from "../misc/bumpCount";
-import { Data } from "../index";
-import { SlashCommandBuilder } from "@discordjs/builders";
-
-const commandData = new SlashCommandBuilder()
-	.setName("bumpdecrease")
-	.setDescription("Diminuisci i bump fatti da un utente")
-	.addUserOption(option => option
-		.setName("utente")
-		.setDescription("Una menzione dell' utente di cui vuoi diminuire i bump")
-		.setRequired(true))
-	.addStringOption(option => option
-		.setName("motivo")
-		.setDescription("La ragione per cui vuoi diminire i bump")
-		.setRequired(true))
-	.addIntegerOption(option => option
-		.setName("quanto")
-		.setDescription("Di quanto diminuire i bump dell'utente")
-		.setRequired(false));
-
-const syntax = "bump-decrease <menzione dell'utente> [quantità]";
+import { CommandData, Data } from "../index";
 
 async function execute(interaction: CommandInteraction, data: Data) {
 
@@ -36,8 +17,33 @@ async function execute(interaction: CommandInteraction, data: Data) {
 
 }
 
+const commandData: CommandData = {
+	name: "bumpdecrease",
+	description: "Diminuisci i bump fatti da un utente",
+	default_permission: false,
+	options: [
+		{
+			name: "utente",
+			description: "Una menzione dell' utente di cui vuoi diminuire i bump",
+			required: true,
+			type: 6
+		},
+		{
+			name: "ragione",
+			description: "La ragione per cui vuoi diminire i bump",
+			required: true,
+			type: 3
+		},
+		{
+			name: "quanto",
+			description: "Di quanto diminuire i bump dell'utente",
+			required: false,
+			type: 4
+		},
+	]
+};
+
 export {
-	commandData,
-	syntax,
-	execute
+	execute,
+	commandData
 };

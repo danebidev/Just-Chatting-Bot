@@ -1,25 +1,15 @@
 import { CommandInteraction, GuildMember } from "discord.js";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
 import { readdirSync, createReadStream } from "fs";
-import { Data } from "../index";
-import { SlashCommandBuilder } from "@discordjs/builders";
-
-const commandData = new SlashCommandBuilder()
-	.setName("audio")
-	.setDescription("Riproduci un audio")
-	.addStringOption(option => option
-		.setName("audio")
-		.setDescription("L'audio da riprodurre")
-		.setRequired(true));
-
-const syntax = "audio <audio da riprodurre>";
+import { CommandData, Data } from "../index";
+import { downloadAudios } from "../misc/util";
 
 async function execute(interaction: CommandInteraction, _data: Data) {
 
 	if (!(interaction.member! as GuildMember).voice.channel) return interaction.reply({ content: "Non sei in un canale vocale!", ephemeral: true });
 	if (interaction.channel!.type == "DM") return interaction.reply({ content: "Questo comando funziona solo nei server", ephemeral: true });
 
-	const audioName = getAudio(interaction);
+	const audioName = interaction.options.getString("audio")!;
 	if (!audioName) return interaction.reply({ content: "L'audio specificato non è stato trovato", ephemeral: true });
 
 	const player = createAudioPlayer({
@@ -52,36 +42,32 @@ async function execute(interaction: CommandInteraction, _data: Data) {
 
 }
 
-function getAudio(interaction: CommandInteraction) {
-
-	const inputAudio = interaction.options.getString("audio")!.split(/\s+/);
-	const audios = readdirSync("./audio");
-	let audioName = "";
-	if (inputAudio.length > 2) return null;
-
-	if (inputAudio.length == 2) {
-
-		audioName = `${inputAudio[0]!.toLowerCase()} ${inputAudio[1]!.toLowerCase()}-${inputAudio[0]!.at(0)! + inputAudio[1]!.at(0)!}.ogg`;
-		if (!audios.includes(audioName)) return null;
-
-	} else if (inputAudio[0]!.length == 2) {
-
-		for (const audio of audios) {
-			if (audio.includes(inputAudio[0]!)) {
-				audioName = audio;
-				break;
-			}
+const commandData: CommandData = {
+	name: "audio",
+	description: "Riproduci un audio nel tuo canale attuale",
+	default_permission: true,
+	options: [
+		{
+			name: "audio",
+			description: "L'audio da riprodurre",
+			type: 3,
+			required: true,
+			choices: []
 		}
+	]
+};
+
+async function initData() {
+	await downloadAudios();
+	const audios = readdirSync("./audio");
+	for (const audio of audios) {
+		commandData.options![0]!.choices!.push({ name: audio.split(".")[0]!, value: audio });
 	}
-
-	if (audioName == "") return null;
-
-	return audioName;
-
+	return;
 }
 
 export {
+	execute,
 	commandData,
-	syntax,
-	execute
+	initData
 };

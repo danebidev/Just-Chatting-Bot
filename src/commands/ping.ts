@@ -1,12 +1,5 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, Message } from "discord.js";
-import { Data } from "../index";
-
-const commandData = new SlashCommandBuilder()
-	.setName("ping")
-	.setDescription("Controlla il ping del bot");
-
-const syntax = "ping";
+import { CommandData, Data } from "../index";
 
 async function execute(interaction: CommandInteraction, data: Data) {
 
@@ -15,8 +8,13 @@ async function execute(interaction: CommandInteraction, data: Data) {
 
 }
 
+const commandData: CommandData = {
+	name: "ping",
+	description: "Controlla il ping del bot",
+	default_permission: false
+};
+
 export {
-	commandData,
-	syntax,
-	execute
+	execute,
+	commandData
 };

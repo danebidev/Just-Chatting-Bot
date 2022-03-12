@@ -1,4 +1,4 @@
-import { Client, Collection, Guild } from "discord.js";
+import { Collection } from "discord.js";
 import { readdirSync, existsSync, mkdirSync, createWriteStream } from "fs";
 import { Storage } from "megajs";
 import { Command, Data } from "../index";
@@ -25,6 +25,7 @@ async function downloadAudios() {
 		file.download({}).pipe(stream);
 
 	}
+
 }
 
 function registerEvents(data: Data) {
@@ -52,22 +53,8 @@ function readCommands(): Collection<string, Command> {
 
 }
 
-async function readConfig(client: Client) {
-
-	const configuration = new Collection<string, any>();
-
-	configuration.set("guild", await client.guilds.fetch(process.env["GUILDID"]!));
-	configuration.set("bumpCountChannel", await (configuration.get("guild") as Guild).channels.fetch(process.env["BUMPCOUNTCHANNELID"]!));
-	configuration.set("bumpLogChannel", await (configuration.get("guild") as Guild).channels.fetch(process.env["BUMPLOGCHANNELID"]!));
-	configuration.set("bumpatoreRole", await (configuration.get("guild") as Guild).roles.fetch(process.env["BUMPATOREROLEID"]!));
-	configuration.set("bumpatorePlusRole", await (configuration.get("guild") as Guild).roles.fetch(process.env["BUMPATOREPLUSROLEID"]!));
-
-	return configuration;
-}
-
 export {
 	downloadAudios,
 	registerEvents,
-	readCommands,
-	readConfig
+	readCommands
 };

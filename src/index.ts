@@ -8,8 +8,8 @@ config();
 
 interface Command {
 
-	commandData: SlashCommandBuilder
-	syntax: string,
+	commandData: SlashCommandBuilder,
+	initData?: () => Promise<any>,
 	execute: (interaction: CommandInteraction, data: Data) => void
 
 }
@@ -22,6 +22,23 @@ interface Data {
 	config?: Collection<string, any>,
 	commands: Collection<string, Command>
 
+}
+
+interface Option {
+	name: string,
+	description: string,
+	type: number,
+	required?: boolean,
+	options?: Option[]
+	choices?: {name: string, value: string | number}[]
+}
+
+interface CommandData {
+	name: string,
+	type?: 1 | 2 | 3,
+	description: string,
+	default_permission?: boolean
+	options?: Option[]
 }
 
 
@@ -40,7 +57,6 @@ const data: Data = {
 			rejectUnauthorized: false
 		} : false
 	}),
-	config: undefined,
 	commands: readCommands()
 
 };
@@ -54,17 +70,8 @@ client.on("shardError", error => {
 	console.error("A websocket connection encountered an error:", error);
 });
 
-data.database.connect().then(dbClient => {
-	dbClient.query("SELECT * FROM bumps;").then(res => {
-
-		for (const row of res.rows) {
-			data.bumps.set(row.id, row.bumps);
-		}
-
-	});
-}).catch(err => console.error(err));
-
 export {
 	Command,
-	Data
+	Data,
+	CommandData
 };
