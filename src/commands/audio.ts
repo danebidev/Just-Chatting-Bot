@@ -45,7 +45,7 @@ async function execute(interaction: CommandInteraction, _data: Data) {
 const commandData: CommandData = {
 	name: "audio",
 	description: "Riproduci un audio nel tuo canale attuale",
-	default_permission: true,
+	default_permission: false,
 	options: [
 		{
 			name: "audio",

@@ -14,9 +14,7 @@ interface Command {
 
 interface Data {
 	client: Client,
-	bumps: Collection<string, number>,
 	database: Pool,
-	config?: Collection<string, any>,
 	commands: Collection<string, Command>
 }
 
@@ -46,7 +44,6 @@ const client = new Client({
 const data: Data = {
 
 	client: client,
-	bumps: new Collection<string, number>(),
 	database: new Pool({
 		connectionString: process.env["DATABASE_URL"] || process.env["LOCAL_DATABASE_URL"],
 		ssl: process.env["DATABASE_URL"] ? {

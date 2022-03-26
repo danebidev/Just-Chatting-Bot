@@ -2,3 +2,4 @@
 node_modules/
 build/
 audio/
+src/commands/debug.ts

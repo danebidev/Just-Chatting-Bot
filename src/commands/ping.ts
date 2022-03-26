@@ -10,7 +10,7 @@ async function execute(interaction: CommandInteraction, data: Data) {
 
 const commandData: CommandData = {
 	name: "ping",
-	description: "Controlla il ping del bt",
+	description: "Controlla il ping del bot",
 	default_permission: false
 };
 
