@@ -1,27 +1,23 @@
-import { downloadAudios, registerEvents, readCommands } from "./misc/util";
 import { Client, Intents, Collection, CommandInteraction } from "discord.js";
 import { Pool } from "pg";
 import { config } from "dotenv";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { registerCommands } from "./misc/util";
+import { downloadAudios, registerEvents, readCommands } from "./misc/util";
 
 config();
 
 interface Command {
-
-	commandData: SlashCommandBuilder,
-	initData?: () => Promise<any>,
-	execute: (interaction: CommandInteraction, data: Data) => void
-
+	execute: (interaction: CommandInteraction, data: Data) => void,
+	commandData: CommandData,
+	initData?: (commands: Command[]) => Promise<void>
 }
 
 interface Data {
-
 	client: Client,
 	bumps: Collection<string, number>,
 	database: Pool,
 	config?: Collection<string, any>,
 	commands: Collection<string, Command>
-
 }
 
 interface Option {
@@ -29,15 +25,15 @@ interface Option {
 	description: string,
 	type: number,
 	required?: boolean,
-	options?: Option[]
-	choices?: {name: string, value: string | number}[]
+	options?: Option[],
+	choices?: { name: string, value: string | number }[]
 }
 
 interface CommandData {
 	name: string,
 	type?: 1 | 2 | 3,
 	description: string,
-	default_permission?: boolean
+	default_permission?: boolean,
 	options?: Option[]
 }
 
@@ -52,7 +48,7 @@ const data: Data = {
 	client: client,
 	bumps: new Collection<string, number>(),
 	database: new Pool({
-		connectionString: process.env["DATABASE_URL"] || "postgresql://postgres:1515@localhost:5432/postgres",
+		connectionString: process.env["DATABASE_URL"] || process.env["LOCAL_DATABASE_URL"],
 		ssl: process.env["DATABASE_URL"] ? {
 			rejectUnauthorized: false
 		} : false
@@ -61,14 +57,12 @@ const data: Data = {
 
 };
 
+registerCommands(data.commands);
+
 client.login(process.env["TOKEN"]);
 
 downloadAudios();
 registerEvents(data);
-
-client.on("shardError", error => {
-	console.error("A websocket connection encountered an error:", error);
-});
 
 export {
 	Command,

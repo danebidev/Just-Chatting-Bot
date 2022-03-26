@@ -1,6 +1,8 @@
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
 import { Collection } from "discord.js";
 import { readdirSync, existsSync, mkdirSync, createWriteStream } from "fs";
-import { Storage } from "megajs";
+import { Storage, File } from "megajs";
 import { Command, Data } from "../index";
 
 async function downloadAudios() {
@@ -15,24 +17,51 @@ async function downloadAudios() {
 		userAgent: "Just Chatting Bot/1.0"
 	}).ready;
 
-	const audios = mega.root.children!.find(folder => folder.name == "audios")!.children!;
-	const audioFiles = readdirSync("./audio");
+	Promise.all(mega.root.children!.find(folder => folder.name == "audios")!.children!.map(file => file.link({}))).then(async audioLinks => {
 
-	for(const file of audios) {
+		mega.close();
+		const audioFiles = readdirSync("./audio");
 
-		if(audioFiles.includes(file.name!)) continue;
-		const stream = createWriteStream(`./audio/${file.name}`);
-		file.download({}).pipe(stream);
+		for (const link of audioLinks) {
 
-	}
+			let file = File.fromURL(link);
+			file = await file.loadAttributes();
+
+			if(audioFiles.includes(file.name!)) continue;
+
+			const stream = createWriteStream(`./audio/${file.name}`);
+			file.download({}).pipe(stream);
+
+		}
+
+	});
 
 }
+
+async function registerCommands(comms: Collection<string, Command>) {
+
+	const commands = comms.map(command => command);
+	for (const command of commands) {
+		if (command.initData) await command.initData(commands);
+	}
+
+	const rest = new REST({ version: "9" }).setToken(process.env["TOKEN"]!);
+
+	rest.put(Routes.applicationGuildCommands(process.env["CLIENTID"]!, "748232983768465408"), { body: commands.map(command => command.commandData) })
+		.then(() => console.log("Successfully registered application commands. 1"))
+		.catch(console.error);
+
+	rest.put(Routes.applicationGuildCommands(process.env["CLIENTID"]!, "917119141511589959"), { body: commands.map(command => command.commandData) })
+		.then(() => console.log("Successfully registered application commands. 2"))
+		.catch(console.error);
+
+};
 
 function registerEvents(data: Data) {
 
 	const eventFiles = readdirSync("./src/events").filter(file => file.endsWith(".ts"));
 
-	for(const file of eventFiles) {
+	for (const file of eventFiles) {
 		const event = require(`../events/${file}`);
 		data.client.on(event.name, eventData => event.execute(eventData, data));
 	}
@@ -44,7 +73,7 @@ function readCommands(): Collection<string, Command> {
 	const commands = new Collection<string, Command>();
 	const commandFiles = readdirSync("./src/commands").filter(file => file.endsWith(".ts"));
 
-	for(const file of commandFiles) {
+	for (const file of commandFiles) {
 		const command = require(`../commands/${file}`);
 		commands.set(command.commandData.name, command);
 	}
@@ -55,6 +84,7 @@ function readCommands(): Collection<string, Command> {
 
 export {
 	downloadAudios,
+	registerCommands,
 	registerEvents,
 	readCommands
 };

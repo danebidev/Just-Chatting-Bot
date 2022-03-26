@@ -31,7 +31,7 @@ async function changeBumps(user: User, quant: number, data: Data, author?: User,
 async function updateMessage(user: User, newValue: number, data: Data) {
 
 	const channel = (data.config!.get("bumpCountChannel") as TextChannel);
-	const message = (await channel.messages.fetch()).filter((m: Message) => m.content.startsWith(`<@${user.id}>`)).first()!;
+	const message = [...(await channel.messages.fetch()).values()].find((m: Message) => m.content.startsWith(`<@${user.id}>`))!;
 
 	if (newValue <= 0 && message) return message.delete();
 

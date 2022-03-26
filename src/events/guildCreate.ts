@@ -6,7 +6,7 @@ const name = "guildMemberRemove";
 
 function execute(guild: Guild, data: Data) {
 
-	addGuildToDB(guild.id, data);
+	addGuildToDB(guild, data);
 
 }
 
