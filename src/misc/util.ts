@@ -3,7 +3,7 @@ import { Routes } from "discord-api-types/v9";
 import { Collection } from "discord.js";
 import { readdirSync, existsSync, mkdirSync, createWriteStream } from "fs";
 import { Storage, File } from "megajs";
-import { Command, Data } from "../index";
+import { Command } from "../index";
 
 async function downloadAudios() {
 
@@ -19,7 +19,7 @@ async function downloadAudios() {
 
 	Promise.all(mega.root.children!.find(folder => folder.name == "audios")!.children!.map(file => file.link({}))).then(async audioLinks => {
 
-		mega.close();
+		await mega.close();
 		const audioFiles = readdirSync("./audio");
 
 		for (const link of audioLinks) {
@@ -57,17 +57,6 @@ async function registerCommands(comms: Collection<string, Command>) {
 
 };
 
-function registerEvents(data: Data) {
-
-	const eventFiles = readdirSync("./src/events").filter(file => file.endsWith(".ts"));
-
-	for (const file of eventFiles) {
-		const event = require(`../events/${file}`);
-		data.client.on(event.name, eventData => event.execute(eventData, data));
-	}
-
-}
-
 function readCommands(): Collection<string, Command> {
 
 	const commands = new Collection<string, Command>();
@@ -85,6 +74,5 @@ function readCommands(): Collection<string, Command> {
 export {
 	downloadAudios,
 	registerCommands,
-	registerEvents,
 	readCommands
 };

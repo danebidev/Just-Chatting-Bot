@@ -1,16 +1,14 @@
-import { GuildMember } from "discord.js";
+import { Client } from "discord.js";
 import { Data } from "../index";
-import { addGuildToDB, guildIsInDatabase } from "../misc/databaseInterface";
+import { updateGuilds } from "../misc/databaseInterface";
 
 const name = "ready";
 
-async function execute(_member: GuildMember, data: Data) {
+async function execute(_client: Client, data: Data) {
 
 	console.log("Ready!");
 
-	for(const guild of data.client.guilds.cache.values()) {
-		if(!(await guildIsInDatabase(guild, data))) addGuildToDB(guild, data);
-	}
+	await updateGuilds(data);
 
 }
 

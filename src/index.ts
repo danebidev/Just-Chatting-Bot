@@ -1,8 +1,9 @@
 import { Client, Intents, Collection, CommandInteraction } from "discord.js";
 import { Pool } from "pg";
 import { config } from "dotenv";
-import { registerCommands } from "./misc/util";
-import { downloadAudios, registerEvents, readCommands } from "./misc/util";
+import { readCommands, registerCommands } from "./misc/util";
+import { downloadAudios } from "./misc/util";
+import { readdirSync } from "fs";
 
 config();
 
@@ -35,7 +36,6 @@ interface CommandData {
 	options?: Option[]
 }
 
-
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_PRESENCES],
 	partials: ["CHANNEL", "GUILD_MEMBER", "USER", "MESSAGE"]
@@ -59,7 +59,18 @@ registerCommands(data.commands);
 client.login(process.env["TOKEN"]);
 
 downloadAudios();
-registerEvents(data);
+registerEvents();
+
+function registerEvents() {
+
+	const eventFiles = readdirSync("./src/events").filter(file => file.endsWith(".ts"));
+
+	for (const file of eventFiles) {
+		const event = require(`./events/${file}`);
+		data.client.on(event.name, eventData => event.execute(eventData, data));
+	}
+
+}
 
 export {
 	Command,

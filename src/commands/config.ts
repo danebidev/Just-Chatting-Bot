@@ -1,5 +1,6 @@
 import { CommandInteraction } from "discord.js";
 import { Command, CommandData, Data } from "../index";
+import { getPermissions } from "../misc/databaseInterface";
 
 async function execute(interaction: CommandInteraction, data: Data) {
 
@@ -15,8 +16,22 @@ async function execute(interaction: CommandInteraction, data: Data) {
 
 }
 
-function permissionsGet(_interaction: CommandInteraction, _data: Data) {
-	throw new Error("Function not implemented.");
+async function permissionsGet(interaction: CommandInteraction, data: Data) {
+
+	const commands = await interaction.guild!.commands.fetch();
+	const command = [...commands.values()].find(appCommand => appCommand.name == interaction.options.getString("comando"));
+	const permissions = await getPermissions(interaction.guild!, data, command?.id);
+
+	let message = "";
+
+	for(const permission of permissions) {
+		const cmd = commands.get(permission[0]);
+		const mentions = permission[1].map(element => `<@${(element.type == "user" ? "" : "&") + element.id}>`);
+		message += `**${cmd!.name}**: ${mentions.join(" ")}\n`;
+	}
+
+	interaction.reply({ content: message, ephemeral: true });
+
 }
 
 function permissionsAdd(_interaction: CommandInteraction, _data: Data) {
