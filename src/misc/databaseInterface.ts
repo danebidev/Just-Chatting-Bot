@@ -10,6 +10,13 @@ async function updateGuilds(data: Data) {
 
 }
 
+async function guildInDatabase(guild: Guild, data: Data) {
+
+	const res = await data.database.query("SELECT * FROM guilds WHERE id=$1", [guild.id]);
+	return res.rowCount == 1;
+
+}
+
 async function addGuildToDB(guild: Guild, data: Data) {
 
 	const client = await data.database.connect();
@@ -21,10 +28,18 @@ async function addGuildToDB(guild: Guild, data: Data) {
 
 }
 
-async function guildInDatabase(guild: Guild, data: Data) {
+async function updatePermissions(data: Data) {
 
-	const res = await data.database.query("SELECT * FROM guilds WHERE id=$1", [guild.id]);
-	return res.rowCount == 1;
+	const res = await data.database.query("SELECT * FROM permissions");
+
+	for(const row of res.rows) {
+
+		const guild = await data.client.guilds.fetch(row.guild_id);
+		const commands = await guild.commands.fetch();
+
+		if(!commands.has(row.command_id)) data.database.query("DELETE FROM permissions WHERE command_id=$1");
+
+	}
 
 }
 
@@ -53,5 +68,6 @@ async function getPermissions(guild: Guild, data: Data, commandID?: string): Pro
 export {
 	updateGuilds,
 	addGuildToDB,
+	updatePermissions,
 	getPermissions
 };
