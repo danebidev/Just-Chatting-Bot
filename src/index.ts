@@ -1,16 +1,16 @@
-import { Client, Intents, Collection, CommandInteraction } from "discord.js";
+import { Client, Intents, CommandInteraction, Collection } from "discord.js";
 import { Pool } from "pg";
 import { config } from "dotenv";
 import { readdirSync } from "fs";
-import { downloadAudios, readCommands } from "./misc/util";
-import { registerCommands } from "./misc/commandManager";
+import { downloadAudios } from "./misc/util";
+import { readCommands } from "./misc/commandManager";
 
 config();
 
 interface Command {
 	execute: (interaction: CommandInteraction, data: Data) => void,
 	commandData: CommandData,
-	initData?: (commands: Command[]) => Promise<void>
+	initData?: (commands: Collection<string, Command>) => Promise<void>
 }
 
 interface Data {
@@ -53,8 +53,6 @@ const data: Data = {
 	commands: readCommands()
 
 };
-
-registerCommands(data.commands);
 
 client.login(process.env["TOKEN"]);
 

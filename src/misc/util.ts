@@ -1,7 +1,5 @@
-import { Collection } from "discord.js";
 import { readdirSync, existsSync, mkdirSync, createWriteStream } from "fs";
 import { Storage, File } from "megajs";
-import { Command } from "../index";
 
 async function downloadAudios() {
 
@@ -36,21 +34,6 @@ async function downloadAudios() {
 
 }
 
-function readCommands(): Collection<string, Command> {
-
-	const commands = new Collection<string, Command>();
-	const commandFiles = readdirSync("./src/commands").filter(file => file.endsWith(".ts"));
-
-	for (const file of commandFiles) {
-		const command = require(`../commands/${file}`);
-		commands.set(command.commandData.name, command);
-	}
-
-	return commands;
-
-}
-
 export {
-	downloadAudios,
-	readCommands
+	downloadAudios
 };

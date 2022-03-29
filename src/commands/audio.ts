@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember } from "discord.js";
+import { Collection, CommandInteraction, GuildMember } from "discord.js";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel, NoSubscriberBehavior, StreamType } from "@discordjs/voice";
 import { readdirSync, createReadStream } from "fs";
 import { Command, CommandData, Data } from "../index";
@@ -57,12 +57,11 @@ const commandData: CommandData = {
 	]
 };
 
-async function initData(_commands: Command[]) {
+async function initData(_commands: Collection<string, Command>) {
 	await downloadAudios();
-	const audios = readdirSync("./audio");
-	for (const audio of audios) {
+	readdirSync("./audio").forEach(audio => {
 		commandData.options![0]!.choices!.push({ name: audio.split(".")[0]!, value: audio });
-	}
+	});
 }
 
 export {

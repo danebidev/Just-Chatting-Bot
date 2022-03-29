@@ -1,5 +1,6 @@
-import { CommandInteraction, GuildMember, Role } from "discord.js";
+import { Collection, CommandInteraction, GuildMember, Role } from "discord.js";
 import { Command, CommandData, Data } from "../index";
+import { getCommands } from "../misc/commandManager";
 import { addPermission, getPermissions } from "../misc/databaseInterface";
 
 async function execute(interaction: CommandInteraction, data: Data) {
@@ -18,8 +19,8 @@ async function execute(interaction: CommandInteraction, data: Data) {
 
 async function permissionsGet(interaction: CommandInteraction, data: Data) {
 
-	const commands = await interaction.guild!.commands.fetch();
-	const command = [...commands.values()].find(appCommand => appCommand.name == interaction.options.getString("comando"));
+	const commands = await getCommands(data.client, interaction.guild!);
+	const command = commands.find(appCommand => appCommand.name == interaction.options.getString("comando"));
 	const permissions = await getPermissions(interaction.guild!, data, command?.id);
 
 	let message = "";
@@ -51,7 +52,7 @@ async function permissionsAdd(interaction: CommandInteraction, data: Data) {
 		interaction.reply("Permesso aggiunto con successo (spero)");
 
 	} else {
-		return interaction.reply("Uhmmmmmmm-----Tu non dovresti poter vedere questo messaggio...");
+		return interaction.reply("Uhmmmmmmm-----Tu non dovresti vedere questo messaggio...");
 	}
 
 }
@@ -131,11 +132,11 @@ const commandData: CommandData = {
 	]
 };
 
-async function initData(commands: Command[]) {
+async function initData(commands: Collection<string, Command>) {
 
 	for (let i = 0; i < 3; i++) {
 		for (const command of commands) {
-			commandData.options![0]!.options![i]!.options![0]!.choices!.push({ name: command.commandData.name, value: command.commandData.name });
+			commandData.options![0]!.options![i]!.options![0]!.choices!.push({ name: command[1].commandData.name, value: command[1].commandData.name });
 		}
 	}
 

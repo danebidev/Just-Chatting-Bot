@@ -1,27 +1,58 @@
 import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { Collection } from "discord.js";
-import { Command } from "../index";
+import { Client, Collection, Guild } from "discord.js";
+import { readdirSync } from "fs";
+import { Command, Data } from "../index";
 
-async function registerCommands(cmds: Collection<string, Command>) {
+async function getCommands(client: Client, guild: Guild) {
 
-	const commands = cmds.map(command => command);
-	for (const command of commands) {
+	return process.env["LOCAL_TEST_GUILDS_IDS"] ? guild.commands.fetch() : client.application!.commands.fetch();
+
+}
+
+function readCommands(): Collection<string, Command> {
+
+	const commands = new Collection<string, Command>();
+	const commandFiles = readdirSync("./src/commands").filter(file => file.endsWith(".ts"));
+
+	for (const file of commandFiles) {
+		const command = require(`../commands/${file}`);
+		commands.set(command.commandData.name, command);
+	}
+
+	return commands;
+
+}
+
+async function registerCommands(data: Data) {
+
+	const commands = readCommands();
+	for (const command of commands.values()) {
 		if (command.initData) await command.initData(commands);
 	}
 
 	const rest = new REST({ version: "9" }).setToken(process.env["TOKEN"]!);
+	const commandsData = commands.map(command => command.commandData);
 
-	rest.put(Routes.applicationGuildCommands(process.env["CLIENTID"]!, "748232983768465408"), { body: commands.map(command => command.commandData) })
-		.then(() => console.log("Successfully registered application commands. 1"))
-		.catch(console.error);
+	if (process.env["LOCAL_TEST_GUILDS_IDS"]) {
 
-	rest.put(Routes.applicationGuildCommands(process.env["CLIENTID"]!, "917119141511589959"), { body: commands.map(command => command.commandData) })
-		.then(() => console.log("Successfully registered application commands. 2"))
-		.catch(console.error);
+		const guildsIDs = process.env["LOCAL_TEST_GUILDS_IDS"].split(" ");
+
+		guildsIDs.forEach(id => {
+			rest.put(`/applications/${data.client.application!.id}/guilds/${id}/commands`, { body: commandsData })
+				.then(() => console.log("Successfully registered application commands."))
+				.catch(console.error);
+		});
+
+	} else {
+		rest.put(`/applications/${data.client.application!.id}/commands`, { body: commandsData })
+			.then(() => console.log("Started registering application commands (will take an h)."))
+			.catch(console.error);
+	}
 
 };
 
 export {
+	getCommands,
+	readCommands,
 	registerCommands
 };
