@@ -6,7 +6,6 @@
   "scripts": {
     "start": "ts-node .",
     "dev": "nodemon .",
-    "registerCommands": "ts-node ./src/misc/registerCommands.ts",
     "lint": "eslint . --ext .ts",
     "postinstall": "npm run registerCommands"
   },

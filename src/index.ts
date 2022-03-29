@@ -1,9 +1,9 @@
 import { Client, Intents, Collection, CommandInteraction } from "discord.js";
 import { Pool } from "pg";
 import { config } from "dotenv";
-import { readCommands, registerCommands } from "./misc/util";
-import { downloadAudios } from "./misc/util";
 import { readdirSync } from "fs";
+import { downloadAudios, readCommands } from "./misc/util";
+import { registerCommands } from "./misc/commandManager";
 
 config();
 
