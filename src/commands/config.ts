@@ -1,12 +1,12 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, GuildMember, Role } from "discord.js";
 import { Command, CommandData, Data } from "../index";
-import { getPermissions } from "../misc/databaseInterface";
+import { addPermission, getPermissions } from "../misc/databaseInterface";
 
 async function execute(interaction: CommandInteraction, data: Data) {
 
 	const command = interaction.options.getSubcommand();
 
-	if(command == "get") {
+	if (command == "get") {
 		permissionsGet(interaction, data);
 	} else if (command == "add") {
 		permissionsAdd(interaction, data);
@@ -24,7 +24,7 @@ async function permissionsGet(interaction: CommandInteraction, data: Data) {
 
 	let message = "";
 
-	for(const permission of permissions) {
+	for (const permission of permissions) {
 		const cmd = commands.get(permission[0]);
 		const mentions = permission[1].map(element => `<@${(element.type == "user" ? "" : "&") + element.id}>`);
 		message += `**${cmd!.name}**: ${mentions.join(" ")}\n`;
@@ -34,8 +34,26 @@ async function permissionsGet(interaction: CommandInteraction, data: Data) {
 
 }
 
-function permissionsAdd(_interaction: CommandInteraction, _data: Data) {
-	throw new Error("Function not implemented.");
+async function permissionsAdd(interaction: CommandInteraction, data: Data) {
+
+	const commands = await interaction.guild!.commands.fetch();
+	const command = commands.find(cmd => cmd.name == interaction.options.getString("comando"))!;
+	const mentionable = interaction.options.getMentionable("utente");
+
+	if (mentionable instanceof GuildMember || mentionable instanceof Role) {
+
+		if (mentionable instanceof Role && mentionable.name == "@everyone") return interaction.reply("Ma anche no!");
+		const permissions = await getPermissions(interaction.guild!, data, command.id);
+
+		if(permissions.get(command.id)!.some(permission => permission.id == mentionable.id)) return interaction.reply("Questo utente/ruolo ha già questo permesso!");
+
+		await addPermission(interaction.guild!, command, mentionable.id, mentionable instanceof GuildMember ? "user" : "role", data);
+		interaction.reply("Permesso aggiunto con successo (spero)");
+
+	} else {
+		return interaction.reply("Uhmmmmmmm-----Tu non dovresti poter vedere questo messaggio...");
+	}
+
 }
 
 function permissionsRemove(_interaction: CommandInteraction, _data: Data) {

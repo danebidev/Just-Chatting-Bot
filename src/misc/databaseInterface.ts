@@ -1,4 +1,4 @@
-import { Collection, Guild } from "discord.js";
+import { ApplicationCommand, Collection, Guild } from "discord.js";
 import { QueryResult } from "pg";
 import { Data } from "../index";
 
@@ -30,14 +30,15 @@ async function addGuildToDB(guild: Guild, data: Data) {
 
 async function updatePermissions(data: Data) {
 
-	const res = await data.database.query("SELECT * FROM permissions");
+	const client = await data.database.connect();
+	const res = await client.query("SELECT * FROM permissions");
 
 	for(const row of res.rows) {
 
 		const guild = await data.client.guilds.fetch(row.guild_id);
 		const commands = await guild.commands.fetch();
 
-		if(!commands.has(row.command_id)) data.database.query("DELETE FROM permissions WHERE command_id=$1");
+		if(!commands.has(row.command_id)) client.query("DELETE FROM permissions WHERE command_id=$1", [row.command_id]);
 
 	}
 
@@ -65,9 +66,16 @@ async function getPermissions(guild: Guild, data: Data, commandID?: string): Pro
 
 }
 
+async function addPermission(guild: Guild, command: ApplicationCommand, id: string, type: "user" | "role", data: Data) {
+
+	data.database.query(`INSERT INTO permissions (guild_id, command_id, command_name, ${type}_id) VALUES ($1, $2, $3, $4)`, [guild.id, command.id, command.name, id]);
+
+}
+
 export {
 	updateGuilds,
 	addGuildToDB,
 	updatePermissions,
-	getPermissions
+	getPermissions,
+	addPermission
 };
