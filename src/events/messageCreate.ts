@@ -1,12 +1,17 @@
 import { Message } from "discord.js";
 import { Data } from "../index";
-import { autoBumpCount } from "../misc/bumpCount";
+import { registerCommands } from "../misc/commandManager";
 
 const name = "messageCreate";
 
-function execute(message: Message, data: Data) {
+async function execute(message: Message, data: Data) {
 
-	if (message.author.id == "302050872383242240") autoBumpCount(message, data);
+	if(message.author.id == (await data.client.application!.fetch()).owner?.id) {
+		if(message.content == "updateCommands") {
+			registerCommands(data);
+			message.reply("Updated");
+		}
+	}
 
 }
 

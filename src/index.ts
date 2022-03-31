@@ -1,29 +1,40 @@
-import { downloadAudios, registerEvents, readCommands } from "./misc/util";
-import { Client, Intents, Collection, CommandInteraction } from "discord.js";
+import { Client, Intents, CommandInteraction, Collection } from "discord.js";
 import { Pool } from "pg";
 import { config } from "dotenv";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { readdirSync } from "fs";
+import { downloadAudios } from "./misc/util";
+import { readCommandFiles } from "./misc/commandManager";
 
 config();
 
 interface Command {
-
-	commandData: SlashCommandBuilder
-	syntax: string,
-	execute: (interaction: CommandInteraction, data: Data) => void
-
+	execute: (interaction: CommandInteraction, data: Data) => void,
+	commandData: CommandData,
+	initData?: (commands: Collection<string, Command>) => Promise<void>
 }
 
 interface Data {
-
 	client: Client,
-	bumps: Collection<string, number>,
 	database: Pool,
-	config?: Collection<string, any>,
 	commands: Collection<string, Command>
-
 }
 
+interface Option {
+	name: string,
+	description: string,
+	type: number,
+	required?: boolean,
+	options?: Option[],
+	choices?: { name: string, value: string | number }[]
+}
+
+interface CommandData {
+	name: string,
+	type?: 1 | 2 | 3,
+	description: string,
+	default_permission?: boolean,
+	options?: Option[]
+}
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_PRESENCES],
@@ -33,38 +44,34 @@ const client = new Client({
 const data: Data = {
 
 	client: client,
-	bumps: new Collection<string, number>(),
 	database: new Pool({
-		connectionString: process.env["DATABASE_URL"] || "postgresql://postgres:1515@localhost:5432/postgres",
+		connectionString: process.env["DATABASE_URL"] || process.env["LOCAL_DATABASE_URL"],
 		ssl: process.env["DATABASE_URL"] ? {
 			rejectUnauthorized: false
 		} : false
 	}),
-	config: undefined,
-	commands: readCommands()
+	commands: readCommandFiles()
 
 };
 
 client.login(process.env["TOKEN"]);
 
 downloadAudios();
-registerEvents(data);
+registerEvents();
 
-client.on("shardError", error => {
-	console.error("A websocket connection encountered an error:", error);
-});
+function registerEvents() {
 
-data.database.connect().then(dbClient => {
-	dbClient.query("SELECT * FROM bumps;").then(res => {
+	const eventFiles = readdirSync("./src/events").filter(file => file.endsWith(".ts"));
 
-		for (const row of res.rows) {
-			data.bumps.set(row.id, row.bumps);
-		}
+	for (const file of eventFiles) {
+		const event = require(`./events/${file}`);
+		data.client.on(event.name, eventData => event.execute(eventData, data));
+	}
 
-	});
-}).catch(err => console.error(err));
+}
 
 export {
 	Command,
-	Data
+	Data,
+	CommandData
 };
