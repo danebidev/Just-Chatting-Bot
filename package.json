@@ -6,8 +6,7 @@
   "scripts": {
     "start": "ts-node .",
     "dev": "nodemon .",
-    "lint": "eslint . --ext .ts",
-    "postinstall": "npm run registerCommands"
+    "lint": "eslint . --ext .ts"
   },
   "author": "danebidev",
   "license": "ISC",
