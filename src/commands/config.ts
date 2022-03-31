@@ -1,7 +1,7 @@
 import { Collection, CommandInteraction, GuildMember, Role } from "discord.js";
 import { Command, CommandData, Data } from "../index";
-import { getCommands } from "../misc/commandManager";
-import { addPermission, getPermissions } from "../misc/databaseInterface";
+import { getCommandByName, getCommands, givePermission, revokePermission } from "../misc/commandManager";
+import { getPermissions } from "../misc/databaseInterface";
 
 async function execute(interaction: CommandInteraction, data: Data) {
 
@@ -20,7 +20,7 @@ async function execute(interaction: CommandInteraction, data: Data) {
 async function permissionsGet(interaction: CommandInteraction, data: Data) {
 
 	const commands = await getCommands(data.client, interaction.guild!);
-	const command = commands.find(appCommand => appCommand.name == interaction.options.getString("comando"));
+	const command = await getCommandByName(interaction.options.getString("comando")!, data.client, interaction.guild!);
 	const permissions = await getPermissions(interaction.guild!, data, command?.id);
 
 	let message = "";
@@ -37,28 +37,40 @@ async function permissionsGet(interaction: CommandInteraction, data: Data) {
 
 async function permissionsAdd(interaction: CommandInteraction, data: Data) {
 
-	const commands = await interaction.guild!.commands.fetch();
-	const command = commands.find(cmd => cmd.name == interaction.options.getString("comando"))!;
+	const command = (await getCommandByName(interaction.options.getString("comando")!, data.client, interaction.guild!))!;
 	const mentionable = interaction.options.getMentionable("utente");
 
 	if (mentionable instanceof GuildMember || mentionable instanceof Role) {
 
-		if (mentionable instanceof Role && mentionable.name == "@everyone") return interaction.reply("Ma anche no!");
 		const permissions = await getPermissions(interaction.guild!, data, command.id);
 
-		if(permissions.get(command.id)!.some(permission => permission.id == mentionable.id)) return interaction.reply("Questo utente/ruolo ha già questo permesso!");
+		if(permissions.get(command.id)?.some(permission => permission.id == mentionable.id)) return interaction.reply("Questo utente/ruolo ha già questo permesso!");
 
-		await addPermission(interaction.guild!, command, mentionable.id, mentionable instanceof GuildMember ? "user" : "role", data);
-		interaction.reply("Permesso aggiunto con successo (spero)");
+		givePermission(mentionable, command, data).then(() => {
+			interaction.reply("Permesso aggiunto con successo (spero)");
+		});
 
-	} else {
-		return interaction.reply("Uhmmmmmmm-----Tu non dovresti vedere questo messaggio...");
 	}
 
 }
 
-function permissionsRemove(_interaction: CommandInteraction, _data: Data) {
-	throw new Error("Function not implemented.");
+async function permissionsRemove(interaction: CommandInteraction, data: Data) {
+
+	const command = (await getCommandByName(interaction.options.getString("comando")!, data.client, interaction.guild!))!;
+	const mentionable = interaction.options.getMentionable("utente");
+
+	if (mentionable instanceof GuildMember || mentionable instanceof Role) {
+
+		const permissions = await getPermissions(interaction.guild!, data, command.id);
+
+		if(!permissions.get(command.id)!.some(permission => permission.id == mentionable.id)) return interaction.reply("Questo utente/ruolo non ha questo permesso!");
+
+		revokePermission(mentionable, command, data).then(() => {
+			interaction.reply("Permesso rimosso con successo (spero)");
+		});
+
+	}
+
 }
 
 
@@ -66,7 +78,7 @@ const commandData: CommandData = {
 	name: "config",
 	description: "Configura il bot",
 	// eslint-disable-next-line no-inline-comments
-	default_permission: true, // DA METTERE A FALSE
+	default_permission: true, // SET TO FALSE
 	options: [
 		{
 			name: "permissions",

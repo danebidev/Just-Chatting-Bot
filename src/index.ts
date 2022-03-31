@@ -3,7 +3,7 @@ import { Pool } from "pg";
 import { config } from "dotenv";
 import { readdirSync } from "fs";
 import { downloadAudios } from "./misc/util";
-import { readCommands } from "./misc/commandManager";
+import { readCommandFiles } from "./misc/commandManager";
 
 config();
 
@@ -50,7 +50,7 @@ const data: Data = {
 			rejectUnauthorized: false
 		} : false
 	}),
-	commands: readCommands()
+	commands: readCommandFiles()
 
 };
 

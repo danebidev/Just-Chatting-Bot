@@ -6,8 +6,11 @@ const name = "messageCreate";
 
 async function execute(message: Message, data: Data) {
 
-	if(message.author.id == data.client.application!.owner!.id) {
-		if(message.content == "updateCommands") registerCommands(data);
+	if(message.author.id == (await data.client.application!.fetch()).owner?.id) {
+		if(message.content == "updateCommands") {
+			registerCommands(data);
+			message.reply("Updated");
+		}
 	}
 
 }

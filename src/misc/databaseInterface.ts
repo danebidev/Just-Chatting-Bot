@@ -28,7 +28,7 @@ async function addGuildToDB(guild: Guild, data: Data) {
 
 }
 
-async function updatePermissions(data: Data) {
+async function removeInvalidDBCommands(data: Data) {
 
 	const client = await data.database.connect();
 	const res = await client.query("SELECT * FROM permissions");
@@ -68,14 +68,21 @@ async function getPermissions(guild: Guild, data: Data, commandID?: string): Pro
 
 async function addPermission(guild: Guild, command: ApplicationCommand, id: string, type: "user" | "role", data: Data) {
 
-	data.database.query(`INSERT INTO permissions (guild_id, command_id, command_name, ${type}_id) VALUES ($1, $2, $3, $4)`, [guild.id, command.id, command.name, id]);
+	return data.database.query(`INSERT INTO permissions (guild_id, command_id, command_name, ${type}_id) VALUES ($1, $2, $3, $4)`, [guild.id, command.id, command.name, id]);
+
+}
+
+async function removePermission(guild: Guild, command: ApplicationCommand, id: string, type: "user" | "role", data: Data) {
+
+	return data.database.query(`DELETE FROM permissions WHERE guild_id=$1 AND command_id=$2 AND command_name=$3 AND ${type}_id=$4`, [guild.id, command.id, command.name, id]);
 
 }
 
 export {
 	updateGuilds,
 	addGuildToDB,
-	updatePermissions,
+	removeInvalidDBCommands,
 	getPermissions,
-	addPermission
+	addPermission,
+	removePermission
 };
