@@ -77,8 +77,7 @@ async function permissionsRemove(interaction: CommandInteraction, data: Data) {
 const commandData: CommandData = {
 	name: "config",
 	description: "Configura il bot",
-	// eslint-disable-next-line no-inline-comments
-	default_permission: true, // SET TO FALSE
+	default_permission: false,
 	options: [
 		{
 			name: "permissions",
