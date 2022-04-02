@@ -37,7 +37,7 @@ async function removeInvalidDBCommands(data: Data) {
 	for(const row of res.rows) {
 
 		const guild = await data.client.guilds.fetch(row.guild_id);
-		const commands = await guild.commands.fetch();
+		const commands = await getCommands(data.client, guild);
 
 		if(!commands.has(row.command_id)) client.query("DELETE FROM permissions WHERE command_id=$1", [row.command_id]);
 
@@ -48,11 +48,13 @@ async function removeInvalidDBCommands(data: Data) {
 async function getPermissions(guild: Guild, data: Data, commandID?: string): Promise<Collection<string, {id: string, type: "user" | "role"}[]>> {
 
 	const permissions = new Collection<string, {id: string, type: "user" | "role"}[]>();
-	const res: QueryResult<{ command_id: string, role_id: string, user_id: string }> = commandID ? await data.database.query("SELECT * FROM permissions WHERE guild_id=$1 AND command_id=$2 ORDER BY role_id, user_id", [guild.id, commandID]) : await data.database.query("SELECT * FROM permissions WHERE guild_id=$1 ORDER BY role_id, user_id", [guild.id]);
+	const res: QueryResult<{ command_id: string, role_id: string, user_id: string }> = commandID ?
+		await data.database.query("SELECT * FROM permissions WHERE guild_id=$1 AND command_id=$2 ORDER BY role_id, user_id", [guild.id, commandID]) :
+		await data.database.query("SELECT * FROM permissions WHERE guild_id=$1 ORDER BY role_id, user_id", [guild.id]);
 
 	for(const row of res.rows) {
 
-		const command = (await guild.commands.fetch(row.command_id)).id;
+		const command = (await getCommands(data.client, guild)).get(row.command_id)!.id;
 		const mentionable: string = row.user_id ? row.user_id : row.role_id;
 
 		if(!permissions.has(command)) {
