@@ -1,12 +1,13 @@
 import { ApplicationCommand, Collection, Guild } from "discord.js";
 import { QueryResult } from "pg";
 import { Data } from "../index";
-import { getCommands } from "./commandManager";
+import { getCommands, updatePermissions } from "./commandManager";
 
 async function updateGuilds(data: Data) {
 
 	for(const guild of data.client.guilds.cache.values()) {
-		if(!(await guildInDatabase(guild, data))) addGuildToDB(guild, data);
+		if(!(await guildInDatabase(guild, data))) await addGuildToDB(guild, data);
+		updatePermissions(guild, data);
 	}
 
 }
