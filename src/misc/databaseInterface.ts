@@ -1,6 +1,7 @@
 import { ApplicationCommand, Collection, Guild } from "discord.js";
 import { QueryResult } from "pg";
 import { Data } from "../index";
+import { getCommands } from "./commandManager";
 
 async function updateGuilds(data: Data) {
 
@@ -22,7 +23,7 @@ async function addGuildToDB(guild: Guild, data: Data) {
 	const client = await data.database.connect();
 	client.query("INSERT INTO guilds (id) VALUES ($1)", [guild.id]);
 
-	for(const command of (await guild.commands.fetch()).values()) {
+	for(const command of (await getCommands(data.client, guild)).values()) {
 		client.query("INSERT INTO permissions (guild_id, command_id, command_name, user_id) VALUES ($1, $2, $3, $4)", [guild.id, command.id, command.name, guild.ownerId]);
 	}
 
